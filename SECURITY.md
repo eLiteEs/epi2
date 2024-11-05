@@ -12,8 +12,11 @@ currently being supported with security updates.
 | < v_0.200              | 🔴                |
 
 🟢: Open for issues and security warnings.
+
 🟡: Open for issues and security warnings but be aware because they already might got fixed.
+
 🟠: Open only for security warnings
+
 🔴: Closed for issues and security warnings, the version is too old that the issue must be fixed.
 
 ## Reporting a Vulnerability
