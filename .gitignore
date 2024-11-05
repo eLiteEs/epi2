@@ -30,6 +30,7 @@
 *.out
 *.app
 
+web
 .vscode
 test
 lib
