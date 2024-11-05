@@ -21,9 +21,12 @@ jobs:
       run: |
         icacls .\buildn.exe /grant Everyone:F  # Ensure it is executable (optional)
 
-    - name: Compile code using buildn.exe
+    - name: Compile code using buildn.exe with logging
       run: |
-        .\buildn.exe source_file.cpp -o output_file.exe || exit /b %errorlevel%
+        .\buildn.exe source_file.cpp -o output_file.exe
+        echo Build completed with exit code %errorlevel%
+        exit /b %errorlevel%
+
 
 
     - name: Run tests
