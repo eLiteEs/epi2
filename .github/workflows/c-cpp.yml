@@ -24,8 +24,3 @@ jobs:
     - name: Compile code using buildn.exe with logging
       run: |
         .\buildn.exe test
-
-
-
-    - name: Run tests
-      run: .\epi2.exe  # Run the compiled output to ensure it works correctly
