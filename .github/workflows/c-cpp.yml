@@ -14,7 +14,8 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Clone the repository
+      uses: actions/checkout@v4  # Use the latest stable version
+
 
     - name: Grant execute permissions (if needed)
       run: |
@@ -22,7 +23,8 @@ jobs:
 
     - name: Compile code using buildn.exe
       run: |
-        .\buildn.exe source_file.cpp -o output_file.exe  # Replace with your actual command
+        .\buildn.exe source_file.cpp -o output_file.exe || exit /b %errorlevel%
+
 
     - name: Run tests
       run: .\output_file.exe  # Run the compiled output to ensure it works correctly
