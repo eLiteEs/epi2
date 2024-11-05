@@ -29,6 +29,7 @@
 # Executables
 *.out
 *.app
+a.exe
 
 web
 .vscode
