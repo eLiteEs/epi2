@@ -23,7 +23,7 @@ jobs:
 
     - name: Compile code using buildn.exe with logging
       run: |
-        .\buildn.exe
+        .\buildn.exe test
         echo Build completed with exit code %errorlevel%
         exit /b %errorlevel%
 
