@@ -31,6 +31,7 @@
 *.app
 
 .vscode
+web
 test
 lib
 *.log
