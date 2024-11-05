@@ -23,4 +23,4 @@ jobs:
 
     - name: Compile files for testing the project
       run: |
-        .\buildn.exe
+        .\buildn.exe test
