@@ -23,4 +23,3 @@ jobs:
     - name: Test files for checking errors
       run: |
         .\buildn.exe test
-        exit %ERRORLEVEL%
