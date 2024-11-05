@@ -16,10 +16,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4  # Use the latest stable version
 
-    - name: Grant execute permissions
-      run: |
-        icacls .\buildn.exe /grant Everyone:F  # Ensure it is executable (optional)
-
     - name: Test files for checking errors
       run: |
-        .\buildn.exe test
+        g++ src/epi.cpp
