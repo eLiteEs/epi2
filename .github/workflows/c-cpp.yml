@@ -1,4 +1,4 @@
-name: Custom C++ CI on Windows
+name: Analyze C++ with eBuildNinja
 
 on:
   push:
