@@ -23,11 +23,11 @@ jobs:
 
     - name: Compile code using buildn.exe with logging
       run: |
-        .\buildn.exe source_file.cpp -o output_file.exe
+        .\buildn.exe
         echo Build completed with exit code %errorlevel%
         exit /b %errorlevel%
 
 
 
     - name: Run tests
-      run: .\output_file.exe  # Run the compiled output to ensure it works correctly
+      run: .\epi2.exe  # Run the compiled output to ensure it works correctly
