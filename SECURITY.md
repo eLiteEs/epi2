@@ -8,7 +8,7 @@ currently being supported with security updates.
 | Version                | Supported          |
 | ---------------------- | ------------------ |
 | New Builds (v_0.202)   | 🟢                |
-| v_0.201                | 🟠                |
+| v_0.201                | 🟢                |
 | < v_0.200              | 🔴                |
 
 🟢: Open for issues and security warnings.
