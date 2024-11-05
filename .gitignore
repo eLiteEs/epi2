@@ -27,13 +27,11 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 
 .vscode
-web
 test
 lib
-installer
-*.epi2
+*.log
+target

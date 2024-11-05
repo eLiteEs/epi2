@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-16">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="color-scheme" content="light dark">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+        <title>epi² - Docs</title>
+        <link rel="stylesheet" href="../style.css">
+    </head>
+    <body style="margin:0">
+        <div class="b">
+            <header style="background-color: rgba(0,0,0,0.9);color: rgba(0,0,0,0.9); height: 30px;">
+                <div style="margin-left: 100px;float:left;background: linear-gradient(to right,  #ffa500 0%,#e500ca 100%);width: 246px; height: 26px;padding:2px;font-weight: bolder;">Docs</div>
+            </header>
+            <header style="background-color: rgba(0,0,0,0.9);color: rgba(0,0,0,0.9); height: 30px;">
+                <div style="margin-left: 100px;float:left;background: linear-gradient(to right,  #ffa500 0%,#e500ca 100%);
+                width: 246px; height: 26px;padding:2px;font-weight: bolder;">epi²</div>
+                <a id="fa" style="padding:6px;font-size:15px" href="../../index.html">Main</a>
+                <a style="padding:6px;font-size:15px" href="../../download/">Download</a>
+                <a style="padding:6px;font-size:15px" href="../index.html">Docs</a>
+                <a style="padding:6px;font-size:15px" href="../../releasenotes/">Relase Notes</a>
+            </header>
+            <article style="position: fixed; top: 60px; left:0; right:0; bottom: -2%; overflow-x: hidden !important;">
+                <div style="height: 100%;">
+                    <div style="background-color: rgba(37, 37, 37, 0.8);" list>
+                        <ul id="myUL" style="list-style-type: none;padding: 5px;">
+
+                        </ul>
+                    </div>
+                    <div id="container">
+                        <div id="e1">
+                            <h2>To Number</h2>
+                            <p>You can translate a <code>string</code> or call a <code>number</code> variable and make a number using <code>to_num</code> function.</p>
+                            <code>to_num</code>:
+                            <table>
+                                <tr>
+                                    <td>
+                                        Since:
+                                    </td>
+                                    <td>v_0.2</td>
+                                </tr>
+                                <tr>
+                                    <td>Last Update:</td>
+                                    <td>v_0.2</td>
+                                </tr>
+                            </table>
+                            <hr>
+                            <p>Example:</p>
+                            <code>
+                                number i = 10<br>
+                                print to_num(i) + 1
+                            </code>
+                            <p>This prints 11.</p>
+                            <p>For using a string, you simply introduce a string.</p>
+                            <p>Example:</p>
+                            <code>
+                                number i = to_num("10")<br>
+                                string age = "13"<br>
+                                number j = to_num(age) + to_num(i)
+                            </code>
+
+                            <p class="warning">
+                                <b>Warning: </b>
+                                This function is in development, it might get deprecated at any version of epi. After epi² 0.5 this function is not getting any performance features.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <footer>
+            eLite (c) 2024
+            <p>e-mail: elite.atencionalcliente(at)gmail.com</p>
+            <p>Use that e-mail for reporting bugs.</p>
+        </footer>
+        <script src="../script.js"></script>
+    </body>
+</html>

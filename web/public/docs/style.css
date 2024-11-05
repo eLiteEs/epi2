@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+* {
+    font-family: "Inter", sans-serif;
+}
+a:hover {
+    color:grey;
+    cursor: pointer;
+}
+.last-relase-panel {
+    padding:24px;
+    background-color: rgba(0,0,0,0.8);
+    color:whitesmoke;
+    width: 300px;
+    float:left;
+    margin-left: 5px;
+}
+.last-relase-panel:first {
+    padding:24px;
+    background-color: rgba(0,0,0,0.8);
+    color:whitesmoke;
+    width: 300px;
+    float:left;
+    margin-left:0px!important;
+}
+.last-relase-panel h3 {
+    margin-top: 5px;
+}
+footer {
+    padding: 20px;
+    background-color: rgb(44, 44, 44);
+    height: 150px;
+    position:fixed;
+    bottom: 0;
+    right: 0;
+    left:0;
+}
+footer * {
+    background-color: rgb(44, 44, 44);
+}
+footer ul {
+    list-style-type: none;
+    color:aliceblue
+}
+code {
+    padding:6px;
+    color:aliceblue;
+    background-color: rgba(0,0,0,0.8);
+    font-family: "JetBrains Mono", monospace;
+    margin: 2px 0px 2px 0px;
+    padding: 5px;
+    display: inline-block;
+    font-size: 12px;
+}
+[list] p:not([reference]) {
+    color:rgb(53, 53, 53);
+}
+[list] p:not([reference]):hover {
+    color:grey;
+    text-decoration: 2px underline;
+    cursor: pointer;
+}
+body {
+    overflow: scroll;
+    overflow-x: hidden;
+    overflow: hidden;
+}
+ul li {
+    margin: 5px auto 5px auto
+}
+[list] {
+    position: fixed;
+}
+#container {
+    margin-left: 100px;
+}
+.comment {
+    color: rgb(36, 139, 36); /* Change the color to your desired one */
+    font-family: "JetBrains Mono", monospace;
+}
+table {
+font-family: arial, sans-serif;
+border-collapse: collapse;
+width: 100%;
+}
+
+td, th {
+border: 1px solid #dddddd;
+text-align: left;
+padding: 8px;
+}
+
+/*tr:nth-child(even) {
+background-color: #dddddd;
+}*/
+.caret {
+cursor: pointer;
+-webkit-user-select: none; /* Safari 3.1+ */
+-moz-user-select: none; /* Firefox 2+ */
+-ms-user-select: none; /* IE 10+ */
+user-select: none;
+}
+
+.caret::before {
+content: "\25B6";
+color: aliceblue;
+display: inline-block;
+margin-right: 6px;
+}
+
+.caret-down::before {
+-ms-transform: rotate(90deg); /* IE 9 */
+-webkit-transform: rotate(90deg); /* Safari */
+transform: rotate(90deg);  
+}
+
+.nested {
+display: none;
+}
+
+.active {
+display: block;
+}
+.nested p {
+    color: rgb(205, 205, 205)!important;
+}
+#myUL p {
+    
+    color: rgb(205, 205, 205)!important;
+    color: #ffa500;
+}
+button {
+    padding: 27px 50px;
+    font-weight: 600;
+    font-size: 18px;
+    border: 0;
+    background-color: rgba(0,0,0,0.7);
+    color: white;
+    cursor: pointer;
+    transition-duration: 0.5;
+    transition: all 500ms cubic-bezier(0.420, 0.000, 0.580, 1.000)
+}
+button:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+.animation {
+    cursor: aliceblue;
+    animation-name: cursor;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+}
+@keyframes cursor {
+    from {
+        color: aliceblue;
+    }
+    50% {
+        color: transparent;
+    }
+    to {
+        color: aliceblue;
+    }
+}
+
+#container #e0 {
+    display: block;
+}
+/*#container div {
+    overflow: scroll !important;
+    max-width: calc(100%) !important;
+    max-height: calc(100% - 60px) !important;
+    width: calc(100% - 40px);
+}*/
+
+
+
+[reference] {
+    padding-top: 15px;
+}
+
+header a {
+    color:whitesmoke;
+    text-decoration: none;
+}
+header a:hover {
+    color:grey !important;
+    cursor: pointer !important;
+}
+table {
+    width: 598px;
+}
+
+.animation {
+    cursor: aliceblue;
+    animation-name: cursor;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+}
+@keyframes cursor {
+    from {
+        color: aliceblue;
+    }
+    50% {
+        color: transparent;
+    }
+    to {
+        color: aliceblue;
+    }
+}
+
+article div div {
+    float: left;
+}
+
+article div div[list] {
+    width: 25%;
+    overflow-y: scroll;
+    height: calc(90% - 99px);
+    float: left;
+}
+
+article div div#container {
+    float: left;
+    margin-left: 25%;
+    padding: 20px;
+    height: calc(90% - 99px);
+    overflow: auto;
+    overflow-x: scroll !important;
+    margin-bottom: 10%;
+}
+
+footer {
+    background-color: rgb(44, 44, 44);
+    height: 10%;
+}
+
+#container {
+    /*max-height: calc(90% - 60px) !important;*/
+    height: 90%;
+    width: calc(75% - 40px) !important;
+}
+
+.warning {
+    padding: 12px;
+    background-color: #e2ba0683;
+    border-left: 4px solid yellow;
+}
+
+code.co {
+    display: block;
+    width: 70%;
+}

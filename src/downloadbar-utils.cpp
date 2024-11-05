@@ -30,6 +30,13 @@
     #include <cstdlib>  // For system() call on Linux
 #endif
 
+using namespace std;
+const std::string ASCII_GREEN = "\x1b[32m";
+const std::string ASCII_BOLD = "\x1b[1m";        // Bold text
+const std::string ASCII_RED = "\x1b[31m";
+const std::string ASCII_WHITE = "\x1b[37m";
+const std::string ASCII_RESET = "\x1b[0m" + ASCII_WHITE;   
+
 // Functions for installing libraries
 bool fileExistsOnInternet(const std::string& url) {
 #ifdef _WIN32

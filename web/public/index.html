@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-16">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="color-scheme" content="light dark">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+        <title>epi²</title>
+        <style>
+            * {
+                font-family: "Inter", sans-serif;
+            }
+            a {
+                color:whitesmoke;
+                text-decoration: none;
+            }
+            a:hover {
+                color:grey;
+                cursor: pointer;
+                text-decoration: none;
+            }
+            article a {
+                color:rgb(31, 31, 31);
+                text-decoration: none;
+            }
+            article a:hover {
+                color:rgb(118, 118, 118);
+                text-decoration: 2px underline;
+                cursor: pointer;
+            }
+            .last-relase-panel {
+                padding:24px;
+                background-color: rgba(0,0,0,0.8);
+                color:whitesmoke;
+                width: 300px;
+                float:left;
+                margin-left: 5px;
+            }
+            .last-relase-panel:first {
+                padding:24px;
+                background-color: rgba(0,0,0,0.8);
+                color:whitesmoke;
+                width: 300px;
+                float:left;
+                margin-left:0px!important;
+            }
+            .last-relase-panel h3 {
+                margin-top: 5px;
+            }
+            footer {
+                padding: 20px;
+                background-color: rgb(44, 44, 44);
+                height: 150px;
+                position:fixed;
+                bottom: 0;
+                right: 0;
+                left:0;
+            }
+            footer * {
+                background-color: rgb(44, 44, 44);
+            }
+            footer ul {
+                list-style-type: none;
+                color:aliceblue
+            }
+            code {
+                padding:6px;
+                color:aliceblue;
+                background-color: rgba(0,0,0,0.8);
+                font-family: monospace;
+                margin: 5px 0px 5px 0px;
+                display: inline-block;
+            }
+            [list] p:not([reference]) {
+                color:rgb(53, 53, 53);
+            }
+            [list] p:not([reference]):hover {
+                color:grey;
+                text-decoration: 2px underline;
+                cursor: pointer;
+            }
+            body {
+                overflow: scroll;
+                overflow-x: hidden;
+            }
+            li {
+                height: fit-content;
+            }
+            [list] {
+                position: fixed;
+            }
+            #container {
+                margin-left: 100px;
+            }
+            .comment {
+                color: green; /* Change the color to your desired one */
+            }
+            table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            }
+            
+            td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+            }
+            
+            tr:nth-child(even) {
+            background-color: #dddddd;
+            }
+            .caret {
+            cursor: pointer;
+            -webkit-user-select: none; /* Safari 3.1+ */
+            -moz-user-select: none; /* Firefox 2+ */
+            -ms-user-select: none; /* IE 10+ */
+            user-select: none;
+            }
+            
+            .caret::before {
+            content: "\25B6";
+            color: black;
+            display: inline-block;
+            margin-right: 6px;
+            }
+            
+            .caret-down::before {
+            -ms-transform: rotate(90deg); /* IE 9 */
+            -webkit-transform: rotate(90deg); /* Safari */
+            transform: rotate(90deg);  
+            }
+            
+            .nested {
+            display: none;
+            }
+            
+            .active {
+            display: block;
+            }
+            .nested p {
+                color: rgb(205, 205, 205)!important;
+            }
+            #myUL p {
+                
+                color: rgb(205, 205, 205)!important;
+                color: #ffa500;
+            }
+            button {
+                padding: 27px 50px;
+                font-weight: 600;
+                font-size: 18px;
+                border: 0;
+                background-color: rgba(0,0,0,0.7);
+                color: white;
+                cursor: pointer;
+                transition-duration: 0.5;
+                transition: all 500ms cubic-bezier(0.420, 0.000, 0.580, 1.000)
+            }
+            button:hover {
+                background-color: rgba(0,0,0,0.8);
+            }
+
+            .animation {
+                cursor: aliceblue;
+                animation-name: cursor;
+                animation-duration: 500ms;
+                animation-iteration-count: infinite;
+                animation-fill-mode: both;
+            }
+            @keyframes cursor {
+                from {
+                    color: aliceblue;
+                }
+                50% {
+                    color: transparent;
+                }
+                to {
+                    color: aliceblue;
+                }
+            }
+        </style>
+    </head>
+    <body style="margin:0">
+        <header style="background-color: rgba(0,0,0,0.9);color: rgba(0,0,0,0.9); height: 30px;position: fixed;left:0;right:0;">
+            <div style="margin-left: 100px;float:left;background: linear-gradient(to right,  #ffa500 0%,#e500ca 100%);width: 246px; height: 26px;padding:2px;font-weight: bolder;"></div>
+        </header>
+        <header style="background-color: rgba(0,0,0,0.9);color: rgba(0,0,0,0.9); height: 30px;position: fixed;top:30px;left:0;right:0;">
+            <div style="margin-left: 100px;float:left;background: linear-gradient(to right,  #ffa500 0%,#e500ca 100%);
+            width: 246px; height: 26px;padding:2px;font-weight: bolder;">epi²</div>
+            <a style="padding:6px;font-size:15px" href="/">Main</a>
+            <a style="padding:6px;font-size:15px" href="./download/">Download</a>
+            <a style="padding:6px;font-size:15px" href="./docs/index.html">Docs</a>
+            <a style="padding:6px;font-size:15px" href="./releasenotes/">Relase Notes</a>
+        </header>
+        <div style="background: linear-gradient(45deg,  #00d8bf 0%,#00a32e 100%);
+                    padding: 100px;
+                    background-size: cover;
+                    padding-left: 15%;
+                    padding-top: 125px;" class="ad">
+            <h1>epi² v_0.200</h1>
+            <h3>High-Level programming language for coding easier</h3>
+            <button onclick="window.location.href = './download/'">
+                Download
+            </button>
+            <button onclick="window.location.href = './examples/'">
+                Examples
+            </button>
+            <button onclick="window.location.href = './releasenotes/'">
+                Release Notes
+            </button>
+        </div>
+        <div style="color:aliceblue;
+                    background-color: rgba(0,0,0,0.8);
+                    font-family: monospace;
+                    padding: 100px;
+                    background-size: cover;
+                    padding-left: 15%;
+                    padding-top: 125px;
+                    font-size: 30px;" class="ad">
+                    print "Hello World!"<br>
+                    string txt = "Running on epi"<br>
+                    $txt "Running on epi2"<br>
+                    print txt<span class="animation">_</span>
+        </div>
+        <article style="padding: 20px;">
+            <h2>What can epi² do?</h2>
+            <p>Well, epi² can't do a lot of things at the moment but later, epi² could be a lot easier and faster for running simple or complex programs.</p>
+            <p>But epi² v_0.1 now can only print text, make some variables, run cmd commands, and make functions. That's a lot compared to epi that the first version didn't had variables at all.</p>
+            <p>All this was developed with eLite NT v_24.09, one of the newest ones with high inovations on Java, HTML and C++.</p>
+            <h2>How I can use epi²?</h2>
+            <p>At the moment you can't compile files, you can run commands of epi² on the launcher, just download and run the file and you can use it!</p>
+            <h2>Why epi² succeded epi?</h2>
+            <p>As I deleted the folder containing epi code, I couldn't release epi 4.0, somehow i managed to get the code of epi v_1.luc1 but I saw it and I wasn't sure if continue coding it. Until today (31-07-2024) when I started coding epi from zero and made a lot of work until this version.</p>
+            <h2>Is epi² safe?</h2>
+            <p>Yes, although Windows Defender claims this program as a virus, that's a false active, epi and epi² were safe.</p>
+        </article>
+    </body>
+</html>
