@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  run-bat:
+  analyze:
     runs-on: windows-latest  # Use a Windows runner
 
     steps:
@@ -19,3 +19,35 @@ jobs:
     - name: Analyze C++
       run: |
         .\test
+  
+  build:
+    runs-on: ubuntu-latest  # Run on a Linux machine
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Install the cross-compilation toolchain
+    - name: Install mingw-w64 for cross-compiling
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mingw-w64
+
+    # Compile for Linux
+    - name: Compile for Linux
+      run: |
+        g++ src/epi.cpp -o epi2-linux -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32  # Replace with your actual file
+
+    # Cross-compile for Windows
+    - name: Cross-compile for Windows
+      run: |
+        x86_64-w64-mingw32-g++ src/epi.cpp -o epi2-windows.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32  # Replace with your actual file
+
+    # Optional: Upload both executables as artifacts
+    - name: Upload executables
+      uses: actions/upload-artifact@v3
+      with:
+        name: executables
+        path: |
+          epi2-linux
+          epi2-windows.exe
