@@ -30,7 +30,6 @@
 #ifdef _WIN32
     #include <windows.h>
     #include <wininet.h>
-    #pragma comment(lib, "wininet.lib")  // Link WinINet library
 #else
     #include <cstdlib>  // For system() call on Linux
 #endif

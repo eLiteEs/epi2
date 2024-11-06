@@ -25,7 +25,6 @@
 #ifdef _WIN32
     #include <windows.h>
     #include <wininet.h>
-    #pragma comment(lib, "wininet.lib")  // Link WinINet library
 #else
     #include <cstdlib>  // For system() call on Linux
 #endif
@@ -145,7 +144,6 @@ bool downloadFileWithProgress(const std::string& url, const std::string& localFi
     HttpQueryInfo(hUrl, HTTP_QUERY_CONTENT_LENGTH | HTTP_QUERY_FLAG_NUMBER, &fileSize, &fileSizeLength, NULL);
 
     double totalDownloaded = 0;
-    double lastDownloaded = 0;
     double downloadSpeed = 0;
     double lastDownloadSpeed = 0;
     auto startTime = std::chrono::steady_clock::now();
