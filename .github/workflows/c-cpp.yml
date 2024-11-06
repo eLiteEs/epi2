@@ -18,4 +18,4 @@ jobs:
 
     - name: Test files for checking errors
       run: |
-        g++ src/epi.cpp -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
+        .\test
