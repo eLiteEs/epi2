@@ -6,11 +6,11 @@ You can help the development of this programming language or you can use it for 
 ## Build
 You can build this project by running this command on Windows 10/11 of 64 bits cmd:
 
-`buildn`
+`test`
 
 Powershell:
 
-`.\buildn`
+`.\test`
 
 Or you can directly use `g++ src/epi.cpp -o target/epi2.exe -static...` but there are a lot of arguments for required libraries so that's likely a mess.
 ## I want to make my own programming language.
