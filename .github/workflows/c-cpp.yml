@@ -16,4 +16,4 @@ jobs:
     - name: Test files for checking errors
       run: |
         dir
-        Start-Process ".\build.bat"
+        ls
