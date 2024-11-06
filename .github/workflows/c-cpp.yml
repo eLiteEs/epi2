@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Clone the repository
+      uses: actions/checkout@v4  # Clone the repository
 
     - name: Analyze C++
       run: |
@@ -25,7 +25,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # Install the cross-compilation toolchain
     - name: Install mingw-w64 for cross-compiling
@@ -41,7 +41,7 @@ jobs:
     
     # Optional: Upload both executables as artifacts
     - name: Upload executables
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: executables
         path: |
@@ -52,7 +52,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # Compile for Windows
     - name: Compile for Windows
@@ -62,7 +62,7 @@ jobs:
     
     # Optional: Upload both executables as artifacts
     - name: Upload executables
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: executables
         path: |
