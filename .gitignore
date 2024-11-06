@@ -15,7 +15,6 @@
 *.so
 *.dylib
 *.dll
-
 # Fortran module files
 *.mod
 *.smod
@@ -31,7 +30,8 @@
 *.app
 a.exe
 
-web
+public
+
 .vscode
 test
 lib

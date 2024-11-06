@@ -1,3 +1,0 @@
-v.projectName(epi2)
-
-ex("epi2.exe" "epi.cpp" "-static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32")
