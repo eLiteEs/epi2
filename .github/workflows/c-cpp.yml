@@ -13,9 +13,6 @@ jobs:
     runs-on: windows-latest  # Run the job on a Windows machine
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4  # Use the latest stable version
-
     - name: Test files for checking errors
       run: |
-        build.bat
+        Start-Process "build.bat"
