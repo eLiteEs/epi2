@@ -33,6 +33,7 @@ a.exe
 public
 
 .vscode
+web
 test
 lib
 *.log

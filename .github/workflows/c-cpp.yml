@@ -1,23 +1,21 @@
-name: C/C++ CI
+name: Analyze C++ with eBuildNinja
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build:
-
-    runs-on: windows-latest
+    runs-on: windows-latest  # Run the job on a Windows machine
 
     steps:
-    - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+    - name: Checkout code
+      uses: actions/checkout@v4  # Use the latest stable version
+
+    - name: Test files for checking errors
+      run: |
+        .\test
