@@ -20,32 +20,32 @@ jobs:
       run: |
         .\test
   
-  build-linux:
-    runs-on: ubuntu-latest  # Run on a Linux machine
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    # Install the cross-compilation toolchain
-    - name: Install mingw-w64 for cross-compiling
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y mingw-w64
-
-    # Compile for Linux
-    - name: Compile for Linux
-      run: |
-        g++ src/epi.cpp -o epi2-linux -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32  # Replace with your actual file
-
-    
-    # Optional: Upload both executables as artifacts
-    - name: Upload executables
-      uses: actions/upload-artifact@v4
-      with:
-        name: executables
-        path: |
-          epi2-linux
+  #build-linux:
+  #  runs-on: ubuntu-latest  # Run on a Linux machine
+#
+  #  steps:
+  #  - name: Checkout code
+  #    uses: actions/checkout@v4
+#
+  #  # Install the cross-compilation toolchain
+  #  - name: Install mingw-w64 for cross-compiling
+  #    run: |
+  #      sudo apt-get update
+  #      sudo apt-get install -y mingw-w64
+#
+  #  # Compile for Linux
+  #  - name: Compile for Linux
+  #    run: |
+  #      g++ src/epi.cpp -o epi2-linux -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32  # Replace with your actual file
+#
+  #  
+  #  # Optional: Upload both executables as artifacts
+  #  - name: Upload executables
+  #    uses: actions/upload-artifact@v4
+  #    with:
+  #      name: executables
+  #      path: |
+  #        epi2-linux
 
   build-windows:
     runs-on: windows-latest  # Run on a Linux machine
