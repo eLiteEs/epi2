@@ -18,4 +18,4 @@ jobs:
 
     - name: Analyze C++
       run: |
-        .\build.bat
+        .\test
