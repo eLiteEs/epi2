@@ -33,16 +33,18 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y mingw-w64
 
-    # Compile for Linux
-    - name: Compile for Linux
-      run: |
-        g++ src/epi.cpp -o epi2-linux -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32  # Replace with your actual file
-
     # Cross-compile for Windows
     - name: Cross-compile for Windows
       run: |
         x86_64-w64-mingw32-g++ src/epi.cpp -o epi2-windows.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32  # Replace with your actual file
 
+
+    # Compile for Linux
+    - name: Compile for Linux
+      run: |
+        g++ src/epi.cpp -o epi2-linux -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32  # Replace with your actual file
+
+    
     # Optional: Upload both executables as artifacts
     - name: Upload executables
       uses: actions/upload-artifact@v3
