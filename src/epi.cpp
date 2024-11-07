@@ -95,13 +95,13 @@ int indexOfStrOnCharArr(const std::string& str, char** arr, int argc) {
 }
 bool isCharOutsideQoutes(String s, char c) {
     bool insideQoutes = false;
-    for(int i = 0; i < s.length(); i++) {
+    for(long long unsigned int i = 0; i < s.length(); i++) {
         if(s.at(i) == '\"' && !insideQoutes) {
             try {
                 if(s.at(i - 1) != '\\') {
                     insideQoutes = true;
                 }
-            } catch(exception) {
+            } catch(exception&) {
                 insideQoutes = true;
             }
         } else if(s.at(i) == '\"' && insideQoutes) {
@@ -109,7 +109,7 @@ bool isCharOutsideQoutes(String s, char c) {
                 if(s.at(i - 1) != '\\') {
                     insideQoutes = false;
                 }
-            } catch(exception) {
+            } catch(exception&) {
                 insideQoutes = false;
             }
         }
@@ -172,13 +172,13 @@ std::vector<std::string> splitOutsideQuotes(const std::string& str, char c) {
 int countOccurencesOutsideQuotes(String s, char c) {
     bool insideQoutes = false;
     int r = 0;
-    for(int i = 0; i < s.length(); i++) {
+    for(long long unsigned int i = 0; i < s.length(); i++) {
         if(s.at(i) == '\"' && !insideQoutes) {
             try {
                 if(s.at(i - 1) != '\\') {
                     insideQoutes = true;
                 }
-            } catch(exception) {
+            } catch(exception&) {
                 insideQoutes = true;
             }
         } else if(s.at(i) == '\"' && insideQoutes) {
@@ -186,7 +186,7 @@ int countOccurencesOutsideQuotes(String s, char c) {
                 if(s.at(i - 1) != '\\') {
                     insideQoutes = false;
                 }
-            } catch(exception) {
+            } catch(exception&) {
                 insideQoutes = false;
             }
         }
@@ -314,7 +314,7 @@ bool isDigit(char c) {
 }
 
 bool canBeOperation(String s) {
-    for(int i = 0; i < s.length(); i++) {
+    for(long long unsigned int i = 0; i < s.length(); i++) {
         if(!isDigit(s.c_str()[i]) && s.c_str()[i] != '+' && s.c_str()[i] != '-' && s.c_str()[i] != '/' && s.c_str()[i] != '*') {
             return false;
         }
@@ -492,9 +492,9 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                 result += "false";
             } else {
                 try {
-                    int st = stoi(part);
+                    stoi(part);
                     result += part;
-                } catch(invalid_argument) {
+                } catch(invalid_argument&) {
                     std::string call = part;
                     bool found = false;
 
@@ -569,18 +569,18 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
             result += "false";
         } else {
             try {
-                int st = stoi(s);
+                stoi(s);
                 result += s;
-            } catch(invalid_argument) {
+            } catch(invalid_argument&) {
                         cout << "a" << endl;
 
                 if(s.front() == '-') {
                     try {
                         cout << "a" << endl;
-                        int i = stoi(s.substr(1));
+                        stoi(s.substr(1));
 
                         result += s;
-                    } catch(invalid_argument) {}
+                    } catch(invalid_argument&) {}
                 }
 
                 std::string call = s;
@@ -684,11 +684,11 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                                     result += txtline2;
                                     found = true;
                                 }
-                            } catch(invalid_argument e) {
+                            } catch(invalid_argument& e) {
                                 throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
                             }
                         }
-                    } catch(exception e) {}
+                    } catch(exception& e) {}
                 }
 
                 if (!found) {
@@ -722,7 +722,7 @@ bool validateVariableName(const string& n) {
     }
 
     bool hasAlpha = false;
-    for (int i = 0; i < n.length(); i++) {
+    for (long long unsigned int i = 0; i < n.length(); i++) {
         if (!isValidCharacter(n[i])) {
             return false;
         }
@@ -873,7 +873,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
 
             try {
                 String nextLine = splitOutsideQuotes(file, '\n')[line];
-            } catch(exception) {
+            } catch(exception&) {
                 writingCatch = false;
                 for(String s : splitOutsideQuotes(catchCode, '\n')) {
                     runC(s,returnS, exceptionN, line, onFunction);
@@ -912,13 +912,12 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             }
         }*/
     } else {
-        if(command.find('@') != -1) {
+        if(command.find('@') == std::string::npos) {
             command = splitOutsideQuotes(command, '@')[0];
         }
         try {
-            while(findFirstIndexOutsideQuotes(command, "to_num(") != -1) {
+            while(static_cast<std::string::size_type>(findFirstIndexOutsideQuotes(command, "arg[")) == std::string::npos) {
                 int pos = findFirstIndexOutsideQuotes(command, "to_num(");
-                int end;
 
                 String toReplace = "to_num(";
                 String toCheck = command.substr(pos + 7, command.substr(pos + 7).find_first_of(")"));
@@ -927,15 +926,15 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                 translateString(toCheck, line, exceptionN, onFunction, functionName, line2, onTry);
 
                 try {
-                    int i = stoi(toCheck);
+                    stoi(toCheck);
                     replaceOutsideQuotes2(command, toReplace, toCheck);
-                } catch(invalid_argument) {
+                } catch(invalid_argument&) {
                     throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
                     exceptionN = "epi2.error.syntax.notanumber";
                     return 1;
                 }
             } 
-        } catch(out_of_range) {
+        } catch(out_of_range&) {
 
         }
 
@@ -948,9 +947,8 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                 std::string str = ss.str();
                 replaceOutsideQuotes2(command, "argc", str);
             }
-            while(findFirstIndexOutsideQuotes(command, "arg[") != -1) {
+            while(static_cast<std::string::size_type>(findFirstIndexOutsideQuotes(command, "arg[")) == std::string::npos) {
                 int pos = findFirstIndexOutsideQuotes(command, "arg[");
-                int end;
 
                 String toReplace = "arg[";
                 String toCheck = command.substr(pos + 4, command.substr(pos + 4).find_first_of("]"));
@@ -959,8 +957,8 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                 translateString(toCheck, line, exceptionN, onFunction, functionName, line2, onTry);
 
                 try {
-                    int i = stoi(toCheck) + 1;
-                } catch(invalid_argument) {
+                    stoi(toCheck);
+                } catch(invalid_argument&) {
                     throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
                     exceptionN = "epi2.error.syntax.notanumber";
                     return 1;
@@ -970,7 +968,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     String arg = splitOutsideQuotes(runnedFunctionAs.substr(runnedFunctionAs.find_first_of(" ") + 1), ',')[stoi(toCheck)];
 
                     replaceOutsideQuotes2(command, toReplace, arg);
-                } catch(exception) {
+                } catch(exception&) {
                     throwError("epi2.error.syntax.outofbounds", "You passed the max number of a list.", exceptionN, line, onFunction, functionName, line2, onTry);
                     exceptionN = "epi2.error.syntax.outofbounds";
                     return 1;    
@@ -1011,7 +1009,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             // @since v_0.1
             String s = command.substr(desCommand.length() + 1);
             removeSpacesOutsideQuotes(s);
-            if(s.find('=') != -1) {
+            if(s.find('=') == std::string::npos) {
                 String varName = s.substr(0, s.find('='));
                 if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
                     if(validateVariableName(varName)) {
@@ -1052,18 +1050,18 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             // @since v_0.1
             String s = command.substr(desCommand.length() + 1);
             removeSpacesOutsideQuotes(s);
-            if(s.find('=') != -1) {
+            if(s.find('=') == std::string::npos) {
                 String varName = s.substr(0, s.find('='));
                 if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
                     if(validateVariableName(varName)) {
                         String varContent = s.substr(s.find('=') + 1);
                         translateString(varContent, line, exceptionN, onFunction, functionName, line2, onTry);
                         try {
-                            int val = stoi(varContent);
+                            stoi(varContent);
 
                             vector<String> v = {varName, varContent};
                             numbers.push_back(v);
-                        } catch(invalid_argument e) {
+                        } catch(invalid_argument& e) {
                             throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
                             exceptionN = "epi2.error.syntax.notanumber";
                             return 1;
@@ -1101,7 +1099,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             // @since v_0.1
             String s = command.substr(desCommand.length() + 1);
             removeSpacesOutsideQuotes(s);
-            if(s.find('=') != -1) {
+            if(s.find('=') == std::string::npos) {
                 String varName = s.substr(0, s.find('='));
                 if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
                     if(validateVariableName(varName)) {
@@ -1148,7 +1146,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             // @since v_0.1
             String s = command.substr(desCommand.length() + 1);
             removeSpacesOutsideQuotes(s);
-            if(s.find(':') != -1) {
+            if(s.find(':') == std::string::npos) {
                 String varName = s.substr(0, s.find(':'));
                 if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
                     if(validateVariableName(varName)) {
@@ -1215,10 +1213,10 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     String s = command.substr(desCommand.length() + 1);
                     translateString(s, line, exceptionN, onFunction, functionName, line2, onTry);
                     try {
-                        int n = stoi(s);
+                        stoi(s);
                         numbers[i][1] = s;
                         return 0;
-                    } catch(invalid_argument) {
+                    } catch(invalid_argument&) {
                         throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
                         exceptionN = "epi2.error.syntax.notanumber";
                         return 1;
@@ -1275,7 +1273,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     translateString(retText, line, exceptionN, onFunction, functionName, line2, onTry);
                     returnS = retText;
                     return 0;
-                } catch(exception) {
+                } catch(exception&) {
                     return 0;
                 }
             }
@@ -1295,10 +1293,10 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     String n;
                     getline(cin, n);
                     try {
-                        int j = stoi(n);
+                        stoi(n);
                         numbers[i][1] = n;
                         return 0;
-                    } catch(invalid_argument) {
+                    } catch(invalid_argument&) {
                         throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
                         exceptionN = "epi2.error.syntax.notanumber";
                         return 1;
@@ -1333,7 +1331,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             }
         } else if(desCommand == "msgbox") {
             if(dirGUIIncluded) {
-                if(command.find(",") != -1) {
+                if(command.find(",") == std::string::npos) {
                     String s = command.substr(desCommand.length() + 1);
                     String t = splitOutsideQuotes(s, ',')[1];
                     String m = splitOutsideQuotes(s, ',')[0];
@@ -1365,10 +1363,10 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                 if(v[0] == s) {
                     String n = takePasswdFromUser("");
                     try {
-                        int j = stoi(n);
+                        stoi(n);
                         numbers[i][1] = n;
                         return 0;
-                    } catch(invalid_argument) {
+                    } catch(invalid_argument&) {
                         throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
                         exceptionN = "epi2.error.syntax.notanumber";
                         return 1;
@@ -1382,7 +1380,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             return 1;
         } else if(desCommand == "inpc") {
             String s = command.substr(desCommand.length() + 1);
-            if(s.find(" ") == -1) {
+            if(s.find(" ") == std::string::npos) {
                 throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line, onFunction, functionName, line2, onTry);
                 exceptionN = "epi2.error.lang.missingargs";
                 return 1;
@@ -1403,10 +1401,10 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                 if(v[0] == vName) {
                     String n = takePasswdFromUser(text);
                     try {
-                        int j = stoi(n);
+                        stoi(n);
                         numbers[i][1] = n;
                         return 0;
-                    } catch(invalid_argument) {
+                    } catch(invalid_argument&) {
                         throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
                         exceptionN = "epi2.error.syntax.notanumber";
                         return 1;
@@ -1423,7 +1421,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
         } else if(desCommand == "File") {
             String s = command.substr(desCommand.length() + 1);
             removeSpacesOutsideQuotes(s);
-            if(s.find('(') != -1) {
+            if(s.find('(') == std::string::npos) {
                 String varName = s.substr(0, s.find('('));
                 if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
                     if(validateVariableName(varName)) {
@@ -1433,7 +1431,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                             translateString(varContent, line, exceptionN, onFunction, functionName, line2, onTry);
                             vector<String> v = {varName, varContent};
                             files.push_back(v);
-                        } catch(exception) {
+                        } catch(exception&) {
                             throwError("epi2.error.file.definition.missingfilename", "You should define the filename on the declaration of that variable.", exceptionN, line);
                         }
                     } else {
@@ -1457,7 +1455,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             for(const auto& v : files) {
                 try {
                     if(command.substr(0,v[0].length()) == v[0]) {
-                        if(command.find(' ') != -1) {
+                        if(command.find(' ') == std::string::npos) {
                             String function = command.substr(v[0].length() + 1);
                             function = function.substr(0, function.find(" "));
                             
@@ -1476,7 +1474,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                                 try {
                                     t = command.substr(v[0].length() + 1 + function.length() + 1);
                                     translateString(t, line, exceptionN, onFunction, functionName, line2, onTry);
-                                } catch(out_of_range) {
+                                } catch(out_of_range&) {
                                     throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line, onFunction, functionName, line2, onTry);
                                 }
                                 fa << text << t;
@@ -1488,7 +1486,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                                 try {
                                     t = command.substr(v[0].length() + 1 + function.length() + 1);
                                     translateString(t, line, exceptionN, onFunction, functionName, line2, onTry);
-                                } catch(out_of_range) {
+                                } catch(out_of_range&) {
                                     throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line, onFunction, functionName, line2, onTry);
                                 }
                                 f << t;
@@ -1504,7 +1502,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                             }
                         }
                     }
-                } catch(exception) {}
+                } catch(exception&) {}
             }
 
             throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line, onFunction, functionName, line2, onTry);
@@ -1657,7 +1655,7 @@ int main(int argc, char** argv) {
                 String returnS;
                 String exceptionN;
                 int l = 0;
-                int result = runC(command, returnS, exceptionN, l);
+                 runC(command, returnS, exceptionN, l);
                 if(!returnS.empty()) {
                     cout << ASCII_BOLD << BRIGHT_WHITE << " << " << ASCII_RESET << returnS << "\n";
                 }
