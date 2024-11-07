@@ -1,3 +1,5 @@
+[![Analyze C++](https://github.com/eLiteEs/epi2/actions/workflows/c-cpp.yml/badge.svg?branch=main)](https://github.com/eLiteEs/epi2/actions/workflows/c-cpp.yml)
+
 # epi2
 In this repo you can find the code of epi2 programming language.
 
