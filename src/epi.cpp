@@ -12,11 +12,9 @@
 #include <cctype>
 #include <vector>
 #include <regex>
-#include <sstream>
 #include <stack>
 #include <chrono>
 #include <thread>
-#include <cstdlib>
 #include <random>
 #include <iomanip>
 #include <map>
@@ -26,10 +24,10 @@
 #include <cstdint> // For uint32_t
 #include <streambuf>
 #include <windows.h>
-#include <conio.h>
 #ifdef _WIN32
     #include <windows.h>
     #include <wininet.h>
+    #include <conio.h>
 #else
     #include <cstdlib>  // For system() call on Linux
 #endif
@@ -78,7 +76,7 @@ const std::string BRIGHT_CYAN = "\033[96m";
 const std::string BRIGHT_WHITE = "\033[97m";
 std::string RESET_COLOR = "\033[0m";
 
-// Util Functions with no AI
+// Util Functions
 bool isStrOnCharArr(const std::string& str, char** arr, int argc) {
     for (int i = 0; i < argc; ++i) {
         if (str == arr[i]) {
@@ -474,6 +472,8 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
     removeSpacesOutsideQuotes(s);
     String result = "";
 
+    cout << s << endl;
+
     if(canBeOperation(s)) {
         result = to_string(calculate(s));
         s = result;
@@ -572,6 +572,17 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                 int st = stoi(s);
                 result += s;
             } catch(invalid_argument) {
+                        cout << "a" << endl;
+
+                if(s.front() == '-') {
+                    try {
+                        cout << "a" << endl;
+                        int i = stoi(s.substr(1));
+
+                        result += s;
+                    } catch(invalid_argument) {}
+                }
+
                 std::string call = s;
                 bool found = false;
 
@@ -1442,7 +1453,6 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             String rS = command.substr(desCommand.length() + 1);
             translateString(rS, line, exceptionN, onFunction, functionName, line2, onTry);
             returnS = rS;
-            return 0;
         } else {
             for(const auto& v : files) {
                 try {
@@ -1571,17 +1581,26 @@ int main(int argc, char** argv) {
             remove("epi2.debug.log");
         }
         if(exists(s)) {
+            // Open script files
             fstream f(s);
             fstream f2(s);
             String line, exc, ret, line2;
-            int i = 1;
+
+            vector<String> fileLines;
+
             while(getline(f2, line2)) {
                 file += line2 + "\n";
             }
             while(getline(f, line)) {
-                runC(line, exc, ret, i);
-                if(exc != "") {
-                    return 1;
+                fileLines.push_back(line);
+            }
+
+            int i = 1;
+            for(const auto& s : fileLines) {
+                String l = s;
+                runC(l, ret, exc, i);
+                if(!exc.empty()) {
+                    return -1;
                 }
                 i++;
             }
@@ -1601,11 +1620,16 @@ int main(int argc, char** argv) {
                 cout << ASCII_RED << "Exception occured from main method.\n" << ASCII_RESET;
                 return 1;
             }
+
+            if(!ret.empty() && ret != "0") {
+                return 1;
+            }
+
             f.close();
+
             if(isStrOnCharArr("--from-explorer", argv, argc)) {
                 system("pause");
             }
-
 
             cout << ASCII_RESET;
         } else {
