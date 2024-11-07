@@ -1625,7 +1625,10 @@ int main(int argc, char** argv) {
                 cout << "- \"exit()\" Exit\n";
                 cout << "Go to " << ASCII_UNDERLINE << ASCII_BOLD << ASCII_CYAN << "https://e--epi.web.app/docs/" << ASCII_RESET << " for getting a full list of epi commands.\n";
             } else if(command == "version") {
-                cout << "epi" << (char) 253 << " v_0.202 - (c) eLite 2024\n";
+                cout << "epi" << (char) 253 << " v_0.202\n";
+                cout << "This program is open-source software licensed with GNU GPL v3.\n";
+                cout << "Run \"epi --show-license\" for reading it.\n";
+                cout << "You can modify this code BUT the name of the new program should contain the \"" << (char) 253 << "\" symbol.\n";
             } else {
                 String returnS;
                 String exceptionN;
