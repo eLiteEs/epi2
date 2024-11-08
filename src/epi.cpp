@@ -982,7 +982,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
         } else {
             desCommand = command;
         }
-        if(desCommand == "print") {
+        if(       desCommand == "print") {
             // print function is for printing text into the screen
             // @example print "Hello, " + username + "!"
             // @since v_0.1
@@ -1416,7 +1416,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             throwError("epi2.error.variable.undefinedvariable", "That variable doesn't exist..", exceptionN, line, onFunction, functionName, line2, onTry);
             exceptionN = "epi2.error.variable.undefinedvariable";
             return 1;
-        } else if(command == "try:") {
+        } else if(   command == "try:") {
             writingTry = true;
         } else if(desCommand == "File") {
             String s = command.substr(desCommand.length() + 1);
@@ -1447,10 +1447,6 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             } else {
                 throwError("epi2.error.file.definition.missingfilename", "You should define the filename on the declaration of that variable.", exceptionN, line, onFunction);
             }
-        } else if(desCommand == "return") {
-            String rS = command.substr(desCommand.length() + 1);
-            translateString(rS, line, exceptionN, onFunction, functionName, line2, onTry);
-            returnS = rS;
         } else {
             for(const auto& v : files) {
                 try {
