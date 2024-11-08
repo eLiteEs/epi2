@@ -1,0 +1,8 @@
+function login:
+    printc "Enter you username: "
+    string username
+    in username
+    return username
+
+function main:
+    print "Hello, " + #login
