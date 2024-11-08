@@ -1,6 +1,6 @@
 function login:
     printc "Enter you username: "
-    string username
+    var username as string
     in username
     return username
 

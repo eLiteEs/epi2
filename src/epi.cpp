@@ -301,6 +301,26 @@ vector<vector<String>> functions;
 vector<vector<String>> objects;
 vector<vector<String>> files;
 
+class Variable {
+private:
+    String type = "";
+    String content = "";
+public:
+    Variable(String t, String c) {
+        type = t;
+        content = c;
+    }
+
+    String getType() {
+        return type;
+    }
+    String getContent() {
+        return content;
+    }
+};
+
+vector<Variable> variables;
+
 // Variables for utils
 bool writingFunction = false;
 String functionToWrite = "";
@@ -472,8 +492,6 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
     removeSpacesOutsideQuotes(s);
     String result = "";
 
-    cout << s << endl;
-
     if(canBeOperation(s)) {
         result = to_string(calculate(s));
         s = result;
@@ -572,11 +590,8 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                 stoi(s);
                 result += s;
             } catch(invalid_argument&) {
-                        cout << "a" << endl;
-
                 if(s.front() == '-') {
                     try {
-                        cout << "a" << endl;
                         stoi(s.substr(1));
 
                         result += s;
@@ -1003,7 +1018,22 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             String s = command.substr(desCommand.length() + 1);
             translateString(s, line, exceptionN, onFunction, functionName, line2, onTry);
             system(s.c_str());
-        } else if(desCommand == "string") {
+        } else if(desCommand == "let") {
+            String s = command.substr(desCommand.length() + 1);
+
+            cout << "a";
+            
+            if(findFirstIndexOutsideQuotes(s, "=") != -1) {
+
+            } else {
+                if(s.substr(s.find_first_of(' ') + 1, s.find_first_of(' ') + 3) == "as") {
+                    cout << "a" << endl;
+                } else {
+                    throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line, onFunction, functionName, line2, onTry);
+                }
+            }
+        }
+        /* else if(desCommand == "string") {
             // string keyword is for creating a variable for storing text
             // @example string username = "balas"
             // @since v_0.1
@@ -1140,7 +1170,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     return 1; 
                 }
             }
-        } else if(desCommand == "function") {
+        } */else if(desCommand == "function") {
             // function keyword is for creating a function for storing code
             // @example function helloWorld
             // @since v_0.1
