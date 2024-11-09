@@ -492,6 +492,8 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
     removeSpacesOutsideQuotes(s);
     String result = "";
 
+   cout << s << endl;
+
     if(canBeOperation(s)) {
         result = to_string(calculate(s));
         s = result;
