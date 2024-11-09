@@ -1026,7 +1026,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             if(findFirstIndexOutsideQuotes(s, "=") != -1) {
 
             } else {
-                if(s.substr(s.find_first_of(' ') + 1, s.find_first_of(' ') + 3) == "as") {
+                if(s.substr(s.find_first_of(' ') + 1, s.find_first_of(' ') + 3) == "init") {
                     cout << "a" << endl;
                 } else {
                     throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line, onFunction, functionName, line2, onTry);
@@ -1681,7 +1681,8 @@ int main(int argc, char** argv) {
                 String returnS;
                 String exceptionN;
                 int l = 0;
-                 runC(command, returnS, exceptionN, l);
+                cout << command << endl;
+                runC(command, returnS, exceptionN, l);
                 if(!returnS.empty()) {
                     cout << ASCII_BOLD << BRIGHT_WHITE << " << " << ASCII_RESET << returnS << "\n";
                 }
