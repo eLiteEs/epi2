@@ -492,7 +492,6 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
     removeSpacesOutsideQuotes(s);
     String result = "";
 
-   cout << s << endl;
 
     if(canBeOperation(s)) {
         result = to_string(calculate(s));
@@ -932,8 +931,8 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
         if(command.find('@') == std::string::npos) {
             command = splitOutsideQuotes(command, '@')[0];
         }
-        try {
-            while(static_cast<std::string::size_type>(findFirstIndexOutsideQuotes(command, "arg[")) == std::string::npos) {
+        /*try {
+            while(static_cast<std::string::size_type>(findFirstIndexOutsideQuotes(command, "to_num(")) == std::string::npos) {
                 int pos = findFirstIndexOutsideQuotes(command, "to_num(");
 
                 String toReplace = "to_num(";
@@ -953,7 +952,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             } 
         } catch(out_of_range&) {
 
-        }
+        }*/
 
         if(onFunction) {
             if(countOccurencesOutsideQuotes(runnedFunctionAs, ' ') > 0) {
@@ -1172,7 +1171,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     return 1; 
                 }
             }
-        } */else if(desCommand == "function") {
+        } else if(desCommand == "function") {
             // function keyword is for creating a function for storing code
             // @example function helloWorld
             // @since v_0.1
@@ -1223,7 +1222,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     return 1; 
                 }
             }
-        } else if(desCommand.substr(0,1) == "$") {
+        } */else if(desCommand.substr(0,1) == "$") {
             // $ keyword is for editing a variable
             // @example $hello "Hola"
             // @since v_0.1
@@ -1683,7 +1682,6 @@ int main(int argc, char** argv) {
                 String returnS;
                 String exceptionN;
                 int l = 0;
-                cout << command << endl;
                 runC(command, returnS, exceptionN, l);
                 if(!returnS.empty()) {
                     cout << ASCII_BOLD << BRIGHT_WHITE << " << " << ASCII_RESET << returnS << "\n";
