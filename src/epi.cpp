@@ -1097,47 +1097,20 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             // @since v_0.1
             String varToWrite = desCommand.substr(1);
 
-            int i = 0;
-            for(vector<String> arr : strings) {
-                if(varToWrite == arr[0]) {
-                    String s = command.substr(desCommand.length() + 1);
-                    translateString(s, line, exceptionN, onFunction, functionName, line2, onTry);
-                    strings[i][1] = s;
-                    return 0;
-                }
-                i++;
-            }
-            i = 0;
-            for(vector<String> arr : numbers) {
-                if(varToWrite == arr[0]) {
-                    String s = command.substr(desCommand.length() + 1);
-                    translateString(s, line, exceptionN, onFunction, functionName, line2, onTry);
-                    try {
-                        stoi(s);
-                        numbers[i][1] = s;
+            for(Variable& var : variables) {
+                if(varToWrite == var.getName()) {
+                    String content = command.substr(desCommand.length() + 1);
+                    if(type(content, line, exceptionN, onFunction, functionName, line2, onTry) == var.getType()) {
+                        translateString(content, line, exceptionN, onFunction, functionName, line2, onTry);
+                        var.setContent(content);
                         return 0;
-                    } catch(invalid_argument&) {
-                        throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.syntax.notanumber";
-                        return 1;
-                    }
-                }
-                i++;
-            }
-            for(vector<String> arr : bools) {
-                if(varToWrite == arr[0]) {
-                    String s = command.substr(desCommand.length() + 1);
-                    translateString(s, line, exceptionN, onFunction, functionName, line2, onTry);
-                    if(s == "true" || s == "false") {
-                        bools[i][1] = s;
                     } else {
-                        throwError("epi2.error.syntax.notaboolean", "The value that you entered isn't a boolean.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.syntax.notaboolean";
-                        return 1;
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + type(content, line, exceptionN, onFunction, functionName, line2, onTry) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        return -1;
                     }
                 }
-                i++;
             }
+            throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line, onFunction, functionName, line2, onTry);
         } else if(command.length() >= 1 && command.substr(0,1) == "@") {
             return 0;
         } else if(desCommand.length() >= 1 && desCommand.substr(0,1) == "#") {
