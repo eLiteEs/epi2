@@ -505,9 +505,9 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
         for (const auto &part : parts) {
             if (part.front() == '\"' && part.back() == '\"') {
                 result += part.substr(1, part.length() - 2);
-            } else if(s == "true") {
+            } else if(part == "true") {
                 result += "true";
-            } else if(s == "false") {
+            } else if(part == "false") {
                 result += "false";
             } else {
                 try {
