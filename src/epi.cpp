@@ -305,10 +305,12 @@ class Variable {
 private:
     String type = "";
     String content = "";
+    String name = "";
 public:
-    Variable(String t, String c) {
+    Variable(String t, String n, String c) {
         type = t;
         content = c;
+        name = n;
     }
 
     String getType() {
@@ -316,6 +318,15 @@ public:
     }
     String getContent() {
         return content;
+    }
+    void setType(String newtype) {
+        type = newtype;
+    }
+    void setContent(String newcontent) {
+        content = newcontent;
+    }
+    String getName() {
+        return name;
     }
 };
 
@@ -544,32 +555,11 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                         }
                     }
 
-                    for (const auto &arr : strings) {
-                        if (call == arr[0]) {
-                            result += arr[1];
+                    for(Variable var : variables) {
+                        cout << part << endl << var.getName() << endl;
+                        if(part == var.getName()) {
+                            result += var.getContent();
                             found = true;
-                            break;
-                        }
-                    }
-                    for (const auto &arr : numbers) {
-                        if (call == arr[0]) {
-                            result += arr[1];
-                            found = true;
-                            break;
-                        }
-                    }
-                    for (const auto &arr : bools) {
-                        if (call == arr[0]) {
-                            result += arr[1];
-                            found = true;
-                            break;
-                        }
-                    }
-                    for (const auto &arr : objects) {
-                        if (call == arr[0]) {
-                            result += arr[1];
-                            found = true;
-                            break;
                         }
                     }
 
@@ -629,32 +619,10 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                     throwError("epi2.error.function.unknownfunction", "That function doesn't exist.", exceptionN, line);   
                 }
 
-                for (const auto &arr : strings) {
-                    if (call == arr[0]) {
-                        result += arr[1];
+                for(Variable var : variables) {
+                    if(call == var.getName()) {
+                        result += var.getContent();
                         found = true;
-                        break;
-                    }
-                }
-                for (const auto &arr : numbers) {
-                    if (call == arr[0]) {
-                        result += arr[1];
-                        found = true;
-                        break;
-                    }
-                }
-                for (const auto &arr : bools) {
-                    if (call == arr[0]) {
-                        result += arr[1];
-                        found = true;
-                        break;
-                    }
-                }
-                for (const auto &arr : objects) {
-                    if (call == arr[0]) {
-                        result += arr[1];
-                        found = true;
-                        break;
                     }
                 }
 
@@ -752,6 +720,23 @@ bool validateVariableName(const string& n) {
     }
 
     return true;
+}
+
+String type(String s, int line, String& exceptionN, bool onFunction, String functionName, int line2, bool onTry) {
+    String i = s;
+    translateString(i, line, exceptionN, onFunction, functionName, line2, onTry);
+
+    if(i == "true" || i == "false") {
+        return "boolean";
+    }
+    try {
+        stoi(i);
+        return "number";
+    } catch(invalid_argument&) {
+        return "string";
+    }
+
+    return "string";
 }
 
 // Included statements
@@ -1019,156 +1004,40 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             String s = command.substr(desCommand.length() + 1);
             translateString(s, line, exceptionN, onFunction, functionName, line2, onTry);
             system(s.c_str());
-        } else if(desCommand == "let") {
+        } else if(desCommand == "var") {
             String s = command.substr(desCommand.length() + 1);
+            String name = s.substr(0, s.find_first_of(' '));
 
-            cout << "a";
-            
             if(findFirstIndexOutsideQuotes(s, "=") != -1) {
+                if(s.substr(s.find_first_of(name) + 1 + name.length(), 1) == "=") {
+                    removeSpacesOutsideQuotes(s);
+                    String content = s.substr(s.find_first_of("=") + 1);
 
+                    String t = type(content, line, exceptionN, onFunction, functionName, line2, onTry);
+
+                    translateString(content, line, exceptionN, onFunction, functionName, line2, onTry);
+
+                    Variable var(t, name, content);
+                    variables.push_back(var);
+                } else {
+                    throwError("epi2.syntax.variables.definition", "Missing equal expression for definig a variable.", exceptionN, line, onFunction, functionName, line2, onTry);
+                }
             } else {
-                if(s.substr(s.find_first_of(' ') + 1, s.find_first_of(' ') + 3) == "init") {
-                    cout << "a" << endl;
+                if(s.substr(s.find_first_of(' ') + 1, 2) == "as") {
+                    try {
+                        String t = s.substr(s.find_last_of(' ') + 1);
+                        
+                        if(t == "string" || t == "number" || t == "boolean") {
+                            Variable var(t, name, "");
+                            variables.push_back(var);
+                        } else {
+                            throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line, onFunction, functionName, line2, onTry);
+                        }
+                    } catch(out_of_range&) {
+                        throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line, onFunction, functionName, line2, onTry);
+                    }
                 } else {
                     throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line, onFunction, functionName, line2, onTry);
-                }
-            }
-        }
-        /* else if(desCommand == "string") {
-            // string keyword is for creating a variable for storing text
-            // @example string username = "balas"
-            // @since v_0.1
-            String s = command.substr(desCommand.length() + 1);
-            removeSpacesOutsideQuotes(s);
-            if(s.find('=') == std::string::npos) {
-                String varName = s.substr(0, s.find('='));
-                if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
-                    if(validateVariableName(varName)) {
-                        String varContent = s.substr(s.find('=') + 1);
-                        translateString(varContent, line, exceptionN, onFunction, functionName, line2, onTry);
-                        vector<String> v = {varName, varContent};
-                        strings.push_back(v);
-                    } else {
-                        throwError("epi2.error.variable.invalidname", "You can't use that as variable name, only use characters from a to z, from A to Z, and numbers from 0 to 9 and should start with a character.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.variable.invalidname";
-                        return 1;
-                    }
-                } else {
-                    throwError("epi2.error.variable.redefinition", "You can't recreate a variable with the same name.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.variable.redefinition";
-                    return 1; 
-                }
-            } else {
-                String varName = s;
-                if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
-                    if(validateVariableName(varName)) {
-                        vector<String> v = {varName, "null"};
-                        strings.push_back(v);
-                    } else {
-                        throwError("epi2.error.variable.invalidname", "You can't use that as variable name, only use characters from a to z, from A to Z, and numbers from 0 to 9 and should start with a character.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.variable.invalidname";
-                        return 1;
-                    }
-                } else {
-                    throwError("epi2.error.variable.redefinition", "You can't recreate a variable with the same name.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.variable.redefinition";
-                    return 1; 
-                }
-            }
-        } else if(desCommand == "number") {
-            // number keyword is for creating a variable for storing a number
-            // @example number age = 13
-            // @since v_0.1
-            String s = command.substr(desCommand.length() + 1);
-            removeSpacesOutsideQuotes(s);
-            if(s.find('=') == std::string::npos) {
-                String varName = s.substr(0, s.find('='));
-                if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
-                    if(validateVariableName(varName)) {
-                        String varContent = s.substr(s.find('=') + 1);
-                        translateString(varContent, line, exceptionN, onFunction, functionName, line2, onTry);
-                        try {
-                            stoi(varContent);
-
-                            vector<String> v = {varName, varContent};
-                            numbers.push_back(v);
-                        } catch(invalid_argument& e) {
-                            throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
-                            exceptionN = "epi2.error.syntax.notanumber";
-                            return 1;
-                        }
-                    } else {
-                        throwError("epi2.error.variable.invalidname", "You can't use that as variable name, only use characters from a to z, from A to Z, and numbers from 0 to 9 and should start with a character.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.variable.invalidname";
-                        return 1;
-                    }
-                } else {
-                    throwError("epi2.error.variable.redefinition", "You can't recreate a variable with the same name.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.variable.redefinition";
-                    return 1; 
-                }
-            } else {
-                String varName = s;
-                if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
-                    if(validateVariableName(varName)) {
-                        vector<String> v = {varName, "null"};
-                        numbers.push_back(v);
-                    } else {
-                        throwError("epi2.error.variable.invalidname", "You can't use that as variable name, only use characters from a to z, from A to Z, and numbers from 0 to 9 and should start with a character.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.variable.invalidname";
-                        return 1;
-                    }
-                } else {
-                    throwError("epi2.error.variable.redefinition", "You can't recreate a variable with the same name.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.variable.redefinition";
-                    return 1; 
-                }
-            }
-        } else if(desCommand == "boolean") {
-            // boolean keyword is for creating a variable for storing true or false
-            // @example boolean man = true
-            // @since v_0.1
-            String s = command.substr(desCommand.length() + 1);
-            removeSpacesOutsideQuotes(s);
-            if(s.find('=') == std::string::npos) {
-                String varName = s.substr(0, s.find('='));
-                if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
-                    if(validateVariableName(varName)) {
-                        String varContent = s.substr(s.find('=') + 1);
-                        translateString(varContent, line, exceptionN, onFunction, functionName, line2, onTry);
-                        if(varContent == "false" || varContent == "true") {
-                            vector<String> v = {varName, varContent};
-                            bools.push_back(v);
-                        } else {
-                            throwError("epi2.error.syntax.notaboolean", "The value that you entered isn't a boolean.", exceptionN, line, onFunction, functionName, line2, onTry);
-                            exceptionN = "epi2.error.syntax.notaboolean";
-                            return 1;
-                        }
-                    } else {
-                        throwError("epi2.error.variable.invalidname", "You can't use that as variable name, only use characters from a to z, from A to Z, and numbers from 0 to 9 and should start with a character.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.variable.invalidname";
-                        return 1;
-                    }
-                } else {
-                    throwError("epi2.error.variable.redefinition", "You can't recreate a variable with the same name.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.variable.redefinition";
-                    return 1; 
-                }
-            } else {
-                String varName = s;
-                if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
-                    if(validateVariableName(varName)) {
-                        vector<String> v = {varName, "null"};
-                        bools.push_back(v);
-                    } else {
-                        throwError("epi2.error.variable.invalidname", "You can't use that as variable name, only use characters from a to z, from A to Z, and numbers from 0 to 9 and should start with a character.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.variable.invalidname";
-                        return 1;
-                    }
-                } else {
-                    throwError("epi2.error.variable.redefinition", "You can't recreate a variable with the same name.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.variable.redefinition";
-                    return 1; 
                 }
             }
         } else if(desCommand == "function") {
@@ -1222,7 +1091,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     return 1; 
                 }
             }
-        } */else if(desCommand.substr(0,1) == "$") {
+        } else if(desCommand.substr(0,1) == "$") {
             // $ keyword is for editing a variable
             // @example $hello "Hola"
             // @since v_0.1
