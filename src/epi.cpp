@@ -1105,6 +1105,11 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                         var.setContent(content);
                         return 0;
                     } else {
+                        if(type(content, line, exceptionN, onFunction, functionName, line2, onTry) == "number" && var.getType() == "string") {
+                            translateString(content, line, exceptionN, onFunction, functionName, line2, onTry);
+                            var.setContent(content);
+                            return 0;    
+                        }
                         throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + type(content, line, exceptionN, onFunction, functionName, line2, onTry) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
                         return -1;
                     }
@@ -1152,34 +1157,27 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             }
         } else if(desCommand == "in") {
             String s = command.substr(desCommand.length() + 1);
-            int i = 0;
-            for(const auto& v : strings) {
-                if(v[0] == s) {
-                    getline(cin, strings[i][1]);
-                    return 0;
-                }
-                i++;
-            }
-            i = 0;
-            for(const auto& v : numbers) {
-                if(v[0] == s) {
-                    String n;
-                    getline(cin, n);
-                    try {
-                        stoi(n);
-                        numbers[i][1] = n;
+
+            String r = "";
+            getline(cin, r);
+
+            for(Variable& var : variables) {
+                if(s == var.getName()) {
+                    if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == var.getType()) {
+                        var.setContent(r);
                         return 0;
-                    } catch(invalid_argument&) {
-                        throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.syntax.notanumber";
-                        return 1;
+                    } else {
+                        if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == "number" && var.getType() == "string") {
+                            translateString(r, line, exceptionN, onFunction, functionName, line2, onTry);
+                            var.setContent(r);
+                            return 0;    
+                        }
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + type(r, line, exceptionN, onFunction, functionName, line2, onTry) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        return -1;
                     }
-                    return 0;
                 }
-                i++;
             }
-            throwError("epi2.error.variable.undefinedvariable", "That variable doesn't exist..", exceptionN, line, onFunction, functionName, line2, onTry);
-            exceptionN = "epi2.error.variable.undefinedvariable";
+            throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line, onFunction, functionName, line2, onTry);
             return 1;
         } else if(desCommand == "~include") {
             String s = command.substr(desCommand.length() + 1);
@@ -1223,33 +1221,26 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             }
         } else if(desCommand == "inp") {
             String s = command.substr(desCommand.length() + 1);
-            int i = 0;
-            for(const auto& v : strings) {
-                if(v[0] == s) {
-                    strings[i][1] = takePasswdFromUser("");
-                    return 0;
-                }
-                i++;
-            }
-            i = 0;
-            for(const auto& v : numbers) {
-                if(v[0] == s) {
-                    String n = takePasswdFromUser("");
-                    try {
-                        stoi(n);
-                        numbers[i][1] = n;
+
+            String r = takePasswdFromUser("");
+
+            for(Variable& var : variables) {
+                if(s == var.getName()) {
+                    if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == var.getType()) {
+                        var.setContent(r);
                         return 0;
-                    } catch(invalid_argument&) {
-                        throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.syntax.notanumber";
-                        return 1;
+                    } else {
+                        if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == "number" && var.getType() == "string") {
+                            translateString(r, line, exceptionN, onFunction, functionName, line2, onTry);
+                            var.setContent(r);
+                            return 0;    
+                        }
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + type(r, line, exceptionN, onFunction, functionName, line2, onTry) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        return -1;
                     }
-                    return 0;
                 }
-                i++;
             }
-            throwError("epi2.error.variable.undefinedvariable", "That variable doesn't exist..", exceptionN, line, onFunction, functionName, line2, onTry);
-            exceptionN = "epi2.error.variable.undefinedvariable";
+            throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line, onFunction, functionName, line2, onTry);
             return 1;
         } else if(desCommand == "inpc") {
             String s = command.substr(desCommand.length() + 1);
@@ -1261,33 +1252,26 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             String vName = splitOutsideQuotes(s, ' ')[0];
             String text = splitOutsideQuotes(s, ' ')[1];
             translateString(text, line, exceptionN, onFunction, functionName, line2, onTry);
-            int i = 0;
-            for(const auto& v : strings) {
-                if(v[0] == vName) {
-                    strings[i][1] = takePasswdFromUser(text);
-                    return 0;
-                }
-                i++;
-            }
-            i = 0;
-            for(const auto& v : numbers) {
-                if(v[0] == vName) {
-                    String n = takePasswdFromUser(text);
-                    try {
-                        stoi(n);
-                        numbers[i][1] = n;
+
+            String r = takePasswdFromUser(text);
+
+            for(Variable& var : variables) {
+                if(vName == var.getName()) {
+                    if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == var.getType()) {
+                        var.setContent(r);
                         return 0;
-                    } catch(invalid_argument&) {
-                        throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.syntax.notanumber";
-                        return 1;
+                    } else {
+                        if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == "number" && var.getType() == "string") {
+                            translateString(r, line, exceptionN, onFunction, functionName, line2, onTry);
+                            var.setContent(r);
+                            return 0;    
+                        }
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + type(r, line, exceptionN, onFunction, functionName, line2, onTry) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        return -1;
                     }
-                    return 0;
                 }
-                i++;
             }
-            throwError("epi2.error.variable.undefinedvariable", "That variable doesn't exist..", exceptionN, line, onFunction, functionName, line2, onTry);
-            exceptionN = "epi2.error.variable.undefinedvariable";
+            throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line, onFunction, functionName, line2, onTry);
             return 1;
         } else if(   command == "try:") {
             writingTry = true;
