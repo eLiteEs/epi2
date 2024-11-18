@@ -556,8 +556,7 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                     }
 
                     for(Variable var : variables) {
-                        cout << part << endl << var.getName() << endl;
-                        if(part == var.getName()) {
+                        if(call == var.getName()) {
                             result += var.getContent();
                             found = true;
                         }
@@ -789,6 +788,15 @@ int findFirstIndexOutsideQuotes(const std::string& input, const std::string& tar
     return -1;  // Target not found outside quotes
 }
 
+bool nameAlreadyUsed(String name) {
+    for(Variable var : variables) {
+        if(name == var.getName()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 String file = "";
 
 void logThings(String command, int line, bool onFunction, String functionName, int line2, String runnedFunctionAs, bool onTry) {
@@ -1008,6 +1016,11 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             String s = command.substr(desCommand.length() + 1);
             String name = s.substr(0, s.find_first_of(' '));
 
+            if(nameAlreadyUsed(name)) {
+                throwError("epi2.error.variables.redefinition", "That name is already used for a variable.", exceptionN, line, onFunction, functionName, line2, onTry);
+                return -1;
+            }
+
             if(findFirstIndexOutsideQuotes(s, "=") != -1) {
                 if(s.substr(s.find_first_of(name) + 1 + name.length(), 1) == "=") {
                     removeSpacesOutsideQuotes(s);
@@ -1048,6 +1061,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             removeSpacesOutsideQuotes(s);
             if(s.find(':') == std::string::npos) {
                 String varName = s.substr(0, s.find(':'));
+                cout << varName << endl;
                 if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
                     if(validateVariableName(varName)) {
                         vector<String> v = {varName, ""};
@@ -1358,13 +1372,47 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                 } catch(exception&) {}
             }
 
-            throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line, onFunction, functionName, line2, onTry);
-            exceptionN = "epi2.lang.unexpected.notacommand";
+            translateString(command, line, exceptionN, onFunction, functionName, line2, onTry);
+
+            if(command.find("undefined") != string::npos) {
+                throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line, onFunction, functionName, line2, onTry);
+                exceptionN = "epi2.lang.unexpected.notacommand";
+                return 1;
+            }
+
+            cout << ASCII_BOLD << ">> " << command << endl << ASCII_RESET;
+            /*throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line, onFunction, functionName, line2, onTry);
+            exceptionN = "epi2.lang.unexpected.notacommand";*/
             return 1;
         }
     }
 
     return 0;
+}
+
+void processFile(const std::string& s) {
+    std::ifstream f(s);
+    if (!f.is_open()) return;
+
+    std::string line, ret, exc;
+    int li = 0;
+
+    // Pre-allocate memory if you know the rough size
+    ret.reserve(256);
+    exc.reserve(256);
+
+    // Read file lines into memory to reduce I/O overhead
+    std::vector<std::string> lines;
+    std::string temp;
+    while (getline(f, temp)) {
+        lines.emplace_back(std::move(temp));
+    }
+
+    // Process lines after reading
+    for (String& line : lines) {
+        runC(line, ret, exc, li);
+        li++;
+    }
 }
 
 // Main
@@ -1432,57 +1480,7 @@ int main(int argc, char** argv) {
             remove("epi2.debug.log");
         }
         if(exists(s)) {
-            // Open script files
-            fstream f(s);
-            fstream f2(s);
-            String line, exc, ret, line2;
-
-            vector<String> fileLines;
-
-            while(getline(f2, line2)) {
-                file += line2 + "\n";
-            }
-            while(getline(f, line)) {
-                fileLines.push_back(line);
-            }
-
-            int i = 1;
-            for(const auto& s : fileLines) {
-                String l = s;
-                runC(l, ret, exc, i);
-                if(!exc.empty()) {
-                    return -1;
-                }
-                i++;
-            }
-
-            String excep, command = "#main";
-            for(int i = 2; i < argc; i++) {
-                command += " \"" + getIndexFromArgumentList(i, argv) + "\"";
-            }
-            runC(command, ret, excep, i, false);
-            if(excep == "epi2.error.function.unknownfunction") {
-                throwError("epi2.error.function.unknownfunction", "You must define a main method into the file if you want to compile it.", excep, i);
-                if(isStrOnCharArr("--from-explorer", argv, argc)) {
-                    system("pause");
-                }
-                return 1;
-            } else if(excep != "") {
-                cout << ASCII_RED << "Exception occured from main method.\n" << ASCII_RESET;
-                return 1;
-            }
-
-            if(!ret.empty() && ret != "0") {
-                return 1;
-            }
-
-            f.close();
-
-            if(isStrOnCharArr("--from-explorer", argv, argc)) {
-                system("pause");
-            }
-
-            cout << ASCII_RESET;
+            processFile(s);
         } else {
             cout << ASCII_BOLD << BRIGHT_RED << "Fatal Error: The file you gave doesn't exist.\n" << ASCII_RESET;
         }
