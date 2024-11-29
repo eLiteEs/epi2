@@ -39,14 +39,18 @@ jobs:
 
       - name: Compile for Linux
         run: |
-          g++ src/epi.cpp -o epi2-linux -lncurses -lcurl
+          g++ src/epi.cpp -o epi2 -lncurses -lcurl
+
+      - name: Check for files
+        run: |
+          ls
 
       - name: Upload executables
         uses: actions/upload-artifact@v4
         with:
-          name: executables
+          name: linux-executable
           path: |
-            epi2-linux.exe
+            epi2.exe
 
   build-win:
     runs-on: windows-latest
@@ -64,6 +68,6 @@ jobs:
     - name: Upload executables
       uses: actions/upload-artifact@v4
       with:
-        name: win-executable
+        name: windows-executable
         path: |
           epi2.exe
