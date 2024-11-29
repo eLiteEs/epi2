@@ -50,7 +50,7 @@ jobs:
         with:
           name: linux-executable
           path: |
-            epi2.exe
+            epi2
 
   build-win:
     runs-on: windows-latest
