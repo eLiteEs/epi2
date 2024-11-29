@@ -23,13 +23,13 @@
 #include <cerrno>
 #include <cstdint> // For uint32_t
 #include <streambuf>
-#include <windows.h>
 #ifdef _WIN32
     #include <windows.h>
     #include <wininet.h>
     #include <conio.h>
 #else
     #include <cstdlib>  // For system() call on Linux
+    #include <ncurses.h>
 #endif
 
 #include "noerrorfile.cpp"
@@ -77,6 +77,10 @@ const std::string BRIGHT_WHITE = "\033[97m";
 std::string RESET_COLOR = "\033[0m";
 
 // Util Functions
+struct COORD {
+    int X;
+    int Y;
+};
 bool isStrOnCharArr(const std::string& str, char** arr, int argc) {
     for (int i = 0; i < argc; ++i) {
         if (str == arr[i]) {
@@ -226,17 +230,7 @@ std::vector<std::string> splitString(const std::string& input, char delimiter) {
 
     return result;
 }
-COORD getCursorPosition() {
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (GetConsoleScreenBufferInfo(hConsole, &csbi)) {
-        return csbi.dwCursorPosition;
-    } else {
-        // If it fails, return (0, 0) as a fallback
-        COORD zero = {0, 0};
-        return zero;
-    }
-}
+
 void gotoxy(int x, int y) {
     std::cout << "\033[" << y << ";" << x << "H";
 }
@@ -1354,7 +1348,11 @@ int main(int argc, char** argv) {
             struct tm ltm;
             time(&rawtime);
 
+            #ifdef _WIN32
             localtime_s(&ltm, &rawtime);
+            #else
+            localtime_r(&rawtime, &ltm);
+            #endif
             std::ostringstream ss;
             ss << std::put_time(&ltm, "%d/%m/%Y %H:%M");
 

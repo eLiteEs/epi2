@@ -172,4 +172,18 @@ bool downloadFileWithProgress(const std::string& url, const std::string& localFi
     std::cout << "\nDownload completed successfully!" << std::endl;
     return true;
 }
+#else
+#include <curl/curl.h>
+void downloadFileWithProgress(const std::string& url, const std::string& outputPath) {
+    CURL* curl = curl_easy_init();
+    if (curl) {
+        FILE* file = fopen(outputPath.c_str(), "wb");
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L); // Enable progress display
+        curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        fclose(file);
+    }
+}
 #endif
