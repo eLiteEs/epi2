@@ -9,12 +9,12 @@ on:
       - main
 
 jobs:
-  analyze:
-    runs-on: windows-latest  # Use a Windows runner
+  analyze-win:
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4  # Clone the repository
+      uses: actions/checkout@v4
 
     - name: Analyze C++
       run: |
@@ -47,20 +47,19 @@ jobs:
   #      path: |
   #        epi2-linux
 
-  build-windows:
-    runs-on: windows-latest  # Run on a Linux machine
+  build-win:
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Compile for Windows
+    
     - name: Compile for Windows
       run: |
-        g++ src/epi.cpp -o epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32  # Replace with your actual file
+        g++ src/epi.cpp -o epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
 
     
-    # Optional: Upload both executables as artifacts
     - name: Upload executables
       uses: actions/upload-artifact@v4
       with:

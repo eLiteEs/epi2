@@ -1,4 +1,7 @@
-function login:
-    print "Hola"
+function getUsername:
+    printc "Enter username: "
+    var username as string
+    in username
+    return username
 
-"Hola"
+print "Username: " + #getUsername

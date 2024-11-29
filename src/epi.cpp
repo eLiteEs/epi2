@@ -592,7 +592,7 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                 bool found = false;
 
                 if(call.substr(0,1) == "#") {
-                    String functionName = call.substr(1);
+                    String functionName = call.substr(2);
 
                     int i = 0;
                     
@@ -824,6 +824,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
 
     if(writingFunction) {
         String s("    ");
+
         if(command.substr(0,s.length()) == s && functionToWrite != "") {
             command = command.substr(s.length());
             int i = 0;
@@ -854,7 +855,8 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                 size_t start = 6;
                 size_t end = command.find(":");
                 std::string errorToCatch = command.substr(start, end - start);
-                for(String l : splitOutsideQuotes(tryCode, '\n')) {
+
+                for(String& l : splitOutsideQuotes(tryCode, '\n')) {
                     String excepN = "";
                     runC(l, returnS, excepN, line, onFunction, functionName, line2, runnedFunctionAs, true) ;
                     if(excepN == errorToCatch) {
@@ -862,8 +864,6 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                         writingTry = false;
                         tryCode = "";
                         return 0;
-                    } else if(excepN != "") {
-                        runC(l, returnS, excepN, line, onFunction, functionName, line2, runnedFunctionAs) ;
                     }
                 }
                 return 0;
@@ -878,19 +878,16 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
         if(command.substr(0,s.length()) == s) {
             command = command.substr(s.length());
             
-            catchCode += command +"\n";
+            catchCode += command + "\n";
+            
+            cout << file << endl;
 
             try {
-                String nextLine = splitOutsideQuotes(file, '\n')[line];
+                String s = splitOutsideQuotes(file, '\n')[line+1];
             } catch(exception&) {
-                writingCatch = false;
-                for(String s : splitOutsideQuotes(catchCode, '\n')) {
-                    runC(s,returnS, exceptionN, line, onFunction);
-                }
-                catchCode = "";
-                return 0;
-            } 
-
+                cout << "hehe boi" << endl;
+            }
+            
             return 0;
         } else {
             writingCatch = false;
@@ -900,89 +897,10 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             catchCode = "";
             runC(command,returnS,exceptionN,line);
             return 0;
-        }/* else {
-            writingCatch = false;
-            if(command.substr(0, 5) == "catch") {
-                String errorToCatch = command.substr(5, command.find_last_of(":"));
-                for(String l : splitOutsideQuotes(tryCode, '\n')) {
-                    String excepN = "";
-                    runC(l, returnS, excepN, line, onFunction, functionName, line2, runnedFunctionAs, true) ;
-                    if(excepN == errorToCatch) {
-                        writingCatch = true;
-                        writingTry = false;
-                        tryCode = "";
-                        return 0;
-                    } else if(excepN != "") {
-                        runC(l, returnS, excepN, line, onFunction, functionName, line2, runnedFunctionAs) ;
-                    }
-                }
-            } else {
-                runC(command, returnS, exceptionN, line);
-            }
-        }*/
+        }
     } else {
         if(command.find('@') == std::string::npos) {
             command = splitOutsideQuotes(command, '@')[0];
-        }
-        /*try {
-            while(static_cast<std::string::size_type>(findFirstIndexOutsideQuotes(command, "to_num(")) == std::string::npos) {
-                int pos = findFirstIndexOutsideQuotes(command, "to_num(");
-
-                String toReplace = "to_num(";
-                String toCheck = command.substr(pos + 7, command.substr(pos + 7).find_first_of(")"));
-                toReplace += toCheck + ")";
-
-                translateString(toCheck, line, exceptionN, onFunction, functionName, line2, onTry);
-
-                try {
-                    stoi(toCheck);
-                    replaceOutsideQuotes2(command, toReplace, toCheck);
-                } catch(invalid_argument&) {
-                    throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.syntax.notanumber";
-                    return 1;
-                }
-            } 
-        } catch(out_of_range&) {
-
-        }*/
-
-        if(onFunction) {
-            if(countOccurencesOutsideQuotes(runnedFunctionAs, ' ') > 0) {
-                int number = countOccurencesOutsideQuotes(runnedFunctionAs, ' ');
-
-                std::stringstream ss;
-                ss << number;
-                std::string str = ss.str();
-                replaceOutsideQuotes2(command, "argc", str);
-            }
-            while(static_cast<std::string::size_type>(findFirstIndexOutsideQuotes(command, "arg[")) == std::string::npos) {
-                int pos = findFirstIndexOutsideQuotes(command, "arg[");
-
-                String toReplace = "arg[";
-                String toCheck = command.substr(pos + 4, command.substr(pos + 4).find_first_of("]"));
-                toReplace += toCheck + "]";
-
-                translateString(toCheck, line, exceptionN, onFunction, functionName, line2, onTry);
-
-                try {
-                    stoi(toCheck);
-                } catch(invalid_argument&) {
-                    throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.syntax.notanumber";
-                    return 1;
-                }
-
-                try {
-                    String arg = splitOutsideQuotes(runnedFunctionAs.substr(runnedFunctionAs.find_first_of(" ") + 1), ',')[stoi(toCheck)];
-
-                    replaceOutsideQuotes2(command, toReplace, arg);
-                } catch(exception&) {
-                    throwError("epi2.error.syntax.outofbounds", "You passed the max number of a list.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.syntax.outofbounds";
-                    return 1;    
-                }
-            } 
         }
 
         String desCommand;
@@ -1057,54 +975,28 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             // function keyword is for creating a function for storing code
             // @example function helloWorld
             // @since v_0.1
-            String s = command.substr(desCommand.length() + 1);
-            removeSpacesOutsideQuotes(s);
-            if(s.find(':') == std::string::npos) {
-                String varName = s.substr(0, s.find(':'));
-                cout << varName << endl;
-                if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
-                    if(validateVariableName(varName)) {
-                        vector<String> v = {varName, ""};
-                        functions.push_back(v);
-                        functionToWrite = varName;
-                        writingFunction = true;
+            String args = command.substr(desCommand.length() + 1);
 
-                        int i = 0;
-                        for(const auto& vec : functions) {
-                            if(vec[0] == functionToWrite) {
-                                functions[i][1] = "";
-                                continue;
-                            }
-                            i++;
-                        }
-                    } else {
-                        throwError("epi2.error.variable.invalidname", "You can't use that as variable name, only use characters from a to z, from A to Z, and numbers from 0 to 9 and should start with a character.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.variable.invalidname";
-                        return 1;
-                    }
-                } else {
-                    throwError("epi2.error.variable.redefinition", "You can't recreate a variable with the same name.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.variable.redefinition";
-                    return 1; 
-                }
-            } else {
-                String varName = s;
-                if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
-                    if(validateVariableName(varName)) {
-                        vector<String> v = {varName, ""};
-                        functions.push_back(v);
-                        return 0;
-                    } else {
-                        throwError("epi2.error.variable.invalidname", "You can't use that as variable name, only use characters from a to z, from A to Z, and numbers from 0 to 9 and should start with a character.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.variable.invalidname";
-                        return 1;
-                    }
-                } else {
-                    throwError("epi2.error.variable.redefinition", "You can't recreate a variable with the same name.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.variable.redefinition";
-                    return 1; 
-                }
+            if(args.back() != ':') {
+                throwError("epi2.functions.baddefinition", "A function should always be defined with code.", exceptionN, line, onFunction, functionName, line2, onTry);
+                return 1;
             }
+
+            String name = args.substr(0, args.length() - 1);
+
+            if(!validateVariableName(name)) {
+                throwError("epi2.functions.baddeclaration", "The name you choose for the function isn't valid.", exceptionN, line, onFunction, functionName, line2, onTry);
+                return 1;
+            }
+
+            vector<String> v = {name, ""};
+            
+            writingFunction = true;
+            functionToWrite = name;
+
+            functions.push_back(v);
+
+            return 0;
         } else if(desCommand.substr(0,1) == "$") {
             // $ keyword is for editing a variable
             // @example $hello "Hola"
@@ -1135,7 +1027,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
         } else if(desCommand.length() >= 1 && desCommand.substr(0,1) == "#") {
             int i = 0;
             line2 = 1;
-            
+
             for(const auto& vec : functions) {
                 if(desCommand == "#" + vec[0]) {
                     for(String& s : splitString(vec[1], '\n')) {
@@ -1372,17 +1264,8 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                 } catch(exception&) {}
             }
 
-            translateString(command, line, exceptionN, onFunction, functionName, line2, onTry);
-
-            if(command.find("undefined") != string::npos) {
-                throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line, onFunction, functionName, line2, onTry);
-                exceptionN = "epi2.lang.unexpected.notacommand";
-                return 1;
-            }
-
-            cout << ASCII_BOLD << ">> " << command << endl << ASCII_RESET;
-            /*throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line, onFunction, functionName, line2, onTry);
-            exceptionN = "epi2.lang.unexpected.notacommand";*/
+            throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line, onFunction, functionName, line2, onTry);
+            exceptionN = "epi2.lang.unexpected.notacommand";
             return 1;
         }
     }
@@ -1406,6 +1289,7 @@ void processFile(const std::string& s) {
     std::string temp;
     while (getline(f, temp)) {
         lines.emplace_back(std::move(temp));
+        file += temp + "\n";
     }
 
     // Process lines after reading
