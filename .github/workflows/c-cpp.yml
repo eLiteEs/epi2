@@ -39,7 +39,7 @@ jobs:
 
       - name: Compile for Linux
         run: |
-          g++ src/epi.cpp -o epi2 -lncurses -lcurl -static
+          g++ src/epi.cpp -o epi2 -lncurses -lcurl
 
       - name: Check for files
         run: |
