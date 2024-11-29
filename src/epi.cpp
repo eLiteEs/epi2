@@ -77,10 +77,13 @@ const std::string BRIGHT_WHITE = "\033[97m";
 std::string RESET_COLOR = "\033[0m";
 
 // Util Functions
+#ifdef _WIN32
+#else
 struct COORD {
     int X;
     int Y;
 };
+#endif
 bool isStrOnCharArr(const std::string& str, char** arr, int argc) {
     for (int i = 0; i < argc; ++i) {
         if (str == arr[i]) {
