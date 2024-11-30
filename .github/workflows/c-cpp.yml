@@ -40,7 +40,7 @@ jobs:
 
       - name: Compile for Linux
         run: |
-          ./build-linux
+          ./build-linux.sh
 
       - name: Upload executables
         uses: actions/upload-artifact@v4
