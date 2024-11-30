@@ -31,8 +31,7 @@ jobs:
   
       - name: Install mingw-w64 for cross-compiling
         run: |
-          sudo apt-get update
-          sudo apt-get install -y mingw-w64
+          sudo apt install gcc
           sudo apt install libncurses5-dev libncursesw5-dev
           sudo apt install libcurl4-openssl-dev
 
