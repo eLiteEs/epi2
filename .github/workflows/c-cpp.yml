@@ -29,6 +29,7 @@ jobs:
 
     - name: Analyze C++ on Linux
       run: |
+        chmod +x test-linux.sh
         ./test-linux.sh
   
   build-linux:
@@ -40,6 +41,7 @@ jobs:
 
       - name: Compile for Linux
         run: |
+          chmod +x build-linux.sh  
           ./build-linux.sh
 
       - name: Upload executables
