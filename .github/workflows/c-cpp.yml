@@ -7,45 +7,47 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch: # Enable manual trigger
+  workflow_dispatch:
 
 jobs:
-  analyze-win:
+  analyze-windows:
     runs-on: windows-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Analyze C++
+    - name: Analyze C++ on Windows
       run: |
         .\test
+  analyze-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Analyze C++ on Linux
+      run: |
+        ./test-linux.sh
   
   build-linux:
-    runs-on: ubuntu-latest  # Run on a Linux machine
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-  
-      - name: Install mingw-w64 for cross-compiling
-        run: |
-          sudo apt install gcc
-          sudo apt install libncurses5-dev libncursesw5-dev
-          sudo apt install libcurl4-openssl-dev
-
-
       - name: Compile for Linux
         run: |
-          g++ src/epi.cpp -o epi2 -lncurses -lcurl
+          ./build-linux
 
       - name: Upload executables
         uses: actions/upload-artifact@v4
         with:
           name: linux-executable
           path: |
-            epi2
+            linux-target/epi2
 
   build-win:
     runs-on: windows-latest
