@@ -1,7 +1,7 @@
 # Install required libraries
-sudo apt install g++
-sudo apt install curl
-sudo apt install ncurses
+apt install g++
+apt install curl
+apt install ncurses
 
 # Create output folder
 mkdir linux-target

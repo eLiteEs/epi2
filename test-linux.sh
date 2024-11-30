@@ -1,7 +1,7 @@
 # Install required libraries
-sudo apt install g++
-sudo apt install curl
-sudo apt isntall ncurses
+apt install g++
+apt install curl
+apt isntall ncurses
 
 # Test files
 g++ -Wall -Wextra -pedantic src/epi2.cpp
