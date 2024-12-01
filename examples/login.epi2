@@ -1,6 +1,5 @@
 function getUsername:
     printc "Enter username: "
-    var username as string
     in username
     return username
 

@@ -1080,7 +1080,11 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     }
                 }
             }
-            throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line, onFunction, functionName, line2, onTry);
+
+            // The variable doesn't exist so we create a new variable.
+            String t = type(r, line, exceptionN, onFunction, functionName, line2, onTry);
+            Variable var(t, s, r);
+            variables.push_back(var);
             return 1;
         } else if(desCommand == "~include") {
             String s = command.substr(desCommand.length() + 1);
