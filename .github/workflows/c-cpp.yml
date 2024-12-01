@@ -49,6 +49,7 @@ jobs:
           
           # Comile program using g++
           g++ src/epi.cpp -o linux-target/epi2 -lnucurses -lcurl
+          sudo apt install libcurl4-openssl-dev
 
       - name: Upload executables
         uses: actions/upload-artifact@v4
