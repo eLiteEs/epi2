@@ -86,28 +86,28 @@ jobs:
           path: |
             linux-target/epi2
   
-  build-macos:
-    runs-on: macos-lastest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Build Program
-        run: |
-          # Install necesary dependencies
-          brew install gcc
-          brew install ncurses curl
-
-          # Create output directories
-          mkdir macos-target
-
-          # Build program
-          g++-13 -o macos-target/epi2 src/epi.cpp -lncurses -lcurl
-      
-      - name: Upload executables
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-executable
-          path: |
-            macos-target/epi2
+#  build-macos:
+#    runs-on: macos-lastest
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#      
+#      - name: Build Program
+#        run: |
+#          # Install necesary dependencies
+#          brew install gcc
+#          brew install ncurses curl
+#
+#          # Create output directories
+#          mkdir macos-target
+#
+#          # Build program
+#          g++-13 -o macos-target/epi2 src/epi.cpp -lncurses -lcurl
+#      
+#      - name: Upload executables
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: macos-executable
+#          path: |
+#            macos-target/epi2
