@@ -36,11 +36,8 @@ jobs:
         # Create output folder
         mkdir linux-target
         
-        # Comile program using g++
-        g++ -Wall -Wextra -pedantic src/epi.cpp -lncurses -lcurl
-        g++ -Wall -Wextra -pedantic src/license.cpp -lncurses -lcurl
-        g++ -Wall -Wextra -pedantic src/downloadbar-utils.cpp -lncurses -lcurl
-        g++ -Wall -Wextra -pedantic src/noerrorfile.cpp.cpp -lncurses -lcurl
+        # Analyze program using g++
+        g++ -Wall -Wextra -pedantic -c src/epi.cpp src/license.cpp src/downloadbar-utils.cpp src/noerrorfile.cpp
   
   build-linux:
     runs-on: ubuntu-latest
