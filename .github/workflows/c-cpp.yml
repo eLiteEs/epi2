@@ -37,8 +37,29 @@ jobs:
         mkdir linux-target
         
         # Analyze program using g++
+        echo "Stared checking files..."
         g++ -Wall -Wextra -pedantic -c src/epi.cpp src/license.cpp src/downloadbar-utils.cpp src/noerrorfile.cpp
   
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    
+    - name: Compile for Windows
+      run: |
+        g++ src/epi.cpp -o epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
+
+    
+    - name: Upload executables
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-executable
+        path: |
+          epi2.exe
+
   build-linux:
     runs-on: ubuntu-latest
 
@@ -64,23 +85,29 @@ jobs:
           name: linux-executable
           path: |
             linux-target/epi2
-
-  build-win:
-    runs-on: windows-latest
+  
+  build-macos:
+    runs-on: macos-lastest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Build Program
+        run: |
+          # Install necesary dependencies
+          brew install gcc
+          brew install ncurses curl
 
-    
-    - name: Compile for Windows
-      run: |
-        g++ src/epi.cpp -o epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
+          # Create output directories
+          mkdir macos-target
 
-    
-    - name: Upload executables
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows-executable
-        path: |
-          epi2.exe
+          # Build program
+          g++-13 -o macos-target/epi2 src/epi.cpp -lncurses -lcurl
+      
+      - name: Upload executables
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-executable
+          path: |
+            macos-target/epi2
