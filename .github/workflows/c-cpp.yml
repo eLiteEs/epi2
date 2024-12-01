@@ -49,7 +49,7 @@ jobs:
           mkdir linux-target
           
           # Comile program using g++
-          g++ src/epi.cpp -o linux-target/epi2 -lucurses -lcurl
+          g++ src/epi.cpp -o linux-target/epi2 -lncurses -lcurl
 
       - name: Upload executables
         uses: actions/upload-artifact@v4
