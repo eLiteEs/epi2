@@ -589,7 +589,7 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                 bool found = false;
 
                 if(call.substr(0,1) == "#") {
-                    String functionName = call.substr(2);
+                    String functionName = call.substr(1);
 
                     int i = 0;
                     
@@ -718,18 +718,37 @@ bool validateVariableName(const string& n) {
     return true;
 }
 
-String type(String s, int line, String& exceptionN, bool onFunction, String functionName, int line2, bool onTry) {
+Variable analyze(String s, int line, String& exceptionN, bool onFunction, String functionName, int line2, bool onTry) {
     String i = s;
+    String type, content;
     translateString(i, line, exceptionN, onFunction, functionName, line2, onTry);
 
     if(i == "true" || i == "false") {
-        return "boolean";
+        type = "boolean";
+    } else {
+        try {
+            stoi(i);
+            type = "number";
+        } catch(invalid_argument&) {
+            type = "string";
+        }
     }
-    try {
-        stoi(i);
-        return "number";
-    } catch(invalid_argument&) {
-        return "string";
+
+    Variable var(type, "", i);
+
+    return var;
+}
+
+String typeIn(String content) {
+    if(content == "true" || content == "false") {
+        return "boolean";
+    } else {
+        try {
+            stoi(content);
+            return "number";
+        } catch(invalid_argument&) {
+            return "string";
+        }
     }
 
     return "string";
@@ -941,11 +960,9 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     removeSpacesOutsideQuotes(s);
                     String content = s.substr(s.find_first_of("=") + 1);
 
-                    String t = type(content, line, exceptionN, onFunction, functionName, line2, onTry);
+                    Variable t = analyze(content, line, exceptionN, onFunction, functionName, line2, onTry);
 
-                    translateString(content, line, exceptionN, onFunction, functionName, line2, onTry);
-
-                    Variable var(t, name, content);
+                    Variable var(t.getType(), name, t.getContent());
                     variables.push_back(var);
                 } else {
                     throwError("epi2.syntax.variables.definition", "Missing equal expression for definig a variable.", exceptionN, line, onFunction, functionName, line2, onTry);
@@ -1003,17 +1020,18 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             for(Variable& var : variables) {
                 if(varToWrite == var.getName()) {
                     String content = command.substr(desCommand.length() + 1);
-                    if(type(content, line, exceptionN, onFunction, functionName, line2, onTry) == var.getType()) {
+                    Variable var2(analyze(content, line, exceptionN, onFunction, functionName, line2, onTry));
+                    if(var2.getType() == var.getType()) {
                         translateString(content, line, exceptionN, onFunction, functionName, line2, onTry);
                         var.setContent(content);
                         return 0;
                     } else {
-                        if(type(content, line, exceptionN, onFunction, functionName, line2, onTry) == "number" && var.getType() == "string") {
+                        if(var2.getType() == "number" && var.getType() == "string") {
                             translateString(content, line, exceptionN, onFunction, functionName, line2, onTry);
                             var.setContent(content);
                             return 0;    
                         }
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + type(content, line, exceptionN, onFunction, functionName, line2, onTry) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + var2.getType() + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
                         return -1;
                     }
                 }
@@ -1066,26 +1084,27 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
 
             for(Variable& var : variables) {
                 if(s == var.getName()) {
-                    if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == var.getType()) {
+                    if(typeIn(r) == var.getType()) {
                         var.setContent(r);
                         return 0;
                     } else {
-                        if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == "number" && var.getType() == "string") {
+                        if(typeIn(r) == "number" && typeIn(r) == "string") {
                             translateString(r, line, exceptionN, onFunction, functionName, line2, onTry);
                             var.setContent(r);
                             return 0;    
                         }
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + type(r, line, exceptionN, onFunction, functionName, line2, onTry) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + analyze(r, line, exceptionN, onFunction, functionName, line2, onTry).getType() + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
                         return -1;
                     }
                 }
             }
 
             // The variable doesn't exist so we create a new variable.
-            String t = type(r, line, exceptionN, onFunction, functionName, line2, onTry);
+            String t = typeIn(r);
             Variable var(t, s, r);
             variables.push_back(var);
-            return 1;
+            return 0;
         } else if(desCommand == "~include") {
             String s = command.substr(desCommand.length() + 1);
             if(s == "gui") {
@@ -1126,30 +1145,33 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                 exceptionN = "epi2.error.lang.librarynotimported";
                 return 1;
             }
-        } else if(desCommand == "inp") {
+        } else if(desCommand == "inn") {
             String s = command.substr(desCommand.length() + 1);
 
             String r = takePasswdFromUser("");
 
             for(Variable& var : variables) {
                 if(s == var.getName()) {
-                    if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == var.getType()) {
+                    if(typeIn(r) == var.getType()) {
                         var.setContent(r);
                         return 0;
                     } else {
-                        if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == "number" && var.getType() == "string") {
+                        if(typeIn(r) == "number" && var.getType() == "string") {
                             translateString(r, line, exceptionN, onFunction, functionName, line2, onTry);
                             var.setContent(r);
                             return 0;    
                         }
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + type(r, line, exceptionN, onFunction, functionName, line2, onTry) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + typeIn(r) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
                         return -1;
                     }
                 }
             }
-            throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line, onFunction, functionName, line2, onTry);
-            return 1;
-        } else if(desCommand == "inpc") {
+            // The variable doesn't exist so we create a new variable.
+            String t = typeIn(r);
+            Variable var(t, s, r);
+            variables.push_back(var);
+            return 0;
+        } else if(desCommand == "inp") {
             String s = command.substr(desCommand.length() + 1);
             if(s.find(" ") == std::string::npos) {
                 throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line, onFunction, functionName, line2, onTry);
@@ -1164,22 +1186,25 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
 
             for(Variable& var : variables) {
                 if(vName == var.getName()) {
-                    if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == var.getType()) {
+                    if(typeIn(r) == var.getType()) {
                         var.setContent(r);
                         return 0;
                     } else {
-                        if(type(r, line, exceptionN, onFunction, functionName, line2, onTry) == "number" && var.getType() == "string") {
+                        if(typeIn(r) == "number" && var.getType() == "string") {
                             translateString(r, line, exceptionN, onFunction, functionName, line2, onTry);
                             var.setContent(r);
                             return 0;    
                         }
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + type(r, line, exceptionN, onFunction, functionName, line2, onTry) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + typeIn(r) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
                         return -1;
                     }
                 }
             }
-            throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line, onFunction, functionName, line2, onTry);
-            return 1;
+            // The variable doesn't exist so we create a new variable.
+            String t = typeIn(r);
+            Variable var(t, s, r);
+            variables.push_back(var);
+            return 0;
         } else if(   command == "try:") {
             writingTry = true;
         } else if(desCommand == "File") {

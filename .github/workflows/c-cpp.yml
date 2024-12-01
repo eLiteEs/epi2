@@ -20,17 +20,27 @@ jobs:
     - name: Analyze C++ on Windows
       run: |
         .\test
-#  analyze-linux:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#    - name: Checkout code
-#      uses: actions/checkout@v4
-#
-#    - name: Analyze C++ on Linux
-#      run: |
-#        chmod +x test-linux.sh
-#        ./test-linux.sh
+  analyze-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Analyze C++ on Linux
+      run: |
+        # Install required libraries
+        sudo apt install libncurses5-dev libncursesw5-dev
+        sudo apt install libcurl4-openssl-dev
+        
+        # Create output folder
+        mkdir linux-target
+        
+        # Comile program using g++
+        g++ -Wall -Wextra -pedantic src/epi.cpp -lncurses -lcurl
+        g++ -Wall -Wextra -pedantic src/license.cpp -lncurses -lcurl
+        g++ -Wall -Wextra -pedantic src/downloadbar-utils.cpp -lncurses -lcurl
+        g++ -Wall -Wextra -pedantic src/noerrorfile.cpp.cpp -lncurses -lcurl
   
   build-linux:
     runs-on: ubuntu-latest
