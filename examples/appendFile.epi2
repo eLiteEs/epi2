@@ -1,0 +1,6 @@
+File userdatabase is "userdatabase.dat"
+
+printc "Enter username: "
+in username
+
+apeend ";" + username to userdatabase

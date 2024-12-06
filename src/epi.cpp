@@ -291,12 +291,7 @@ String getIndexFromArgumentList(int ind, char** arr) {
 }
 
 // Variables for storing variables
-vector<vector<String>> strings; // String user = "user"
-vector<vector<String>> numbers; // print user
-vector<vector<String>> bools;
 vector<vector<String>> functions;
-vector<vector<String>> objects;
-vector<vector<String>> files;
 
 class Variable {
 private:
@@ -326,8 +321,57 @@ public:
         return name;
     }
 };
+class File {
+private:
+    String filename;
+    String varName;
+    bool opened = false;
+public:
+    File(String n, String f) {
+        filename = f;
+        varName = n;
+
+        if(f != "") {
+            opened = true;
+        }
+    }
+
+    String getName() {
+        return varName;
+    }
+    String getFilename() {
+        return filename;
+    }
+    void write(String c) {
+        ofstream f(filename);
+        f << c;
+        f.close();
+    }
+    void deletef() {
+        remove(filename.c_str());
+    }
+    String read() {
+        fstream f(filename);
+
+        String line, content;
+        while(getline(f, line)) {
+            content += line;
+        }
+
+        f.close();
+
+        return content;
+    }
+    bool isOpen() {
+        return opened;
+    }
+    void open(String f) {
+        filename = f;
+    }
+};
 
 vector<Variable> variables;
+vector<File> files;
 
 // Variables for utils
 bool writingFunction = false;
@@ -462,24 +506,12 @@ void throwError(String error, String message, String& exceptionN, int line, bool
         } else {
             cout << "\t" << ASCII_BOLD << ASCII_UNDERLINE << ASCII_BLACK << ASCII_BG_GREEN << line << " #" << functionName << ":" << line2 << ASCII_RESET << ASCII_WHITE << ":\n";
         }
-        cout << ASCII_UNDERLINE << "\t\tStrings" << ASCII_RESET << ":\n" << ASCII_RESET << ASCII_WHITE;
-        for(const auto& s : strings) {
-            cout << ASCII_BOLD << s[0] << ":" << ASCII_RESET << ASCII_WHITE << s[1] << "\n";
-        }
-        cout << ASCII_UNDERLINE << "\t\tNumbers" << ASCII_RESET << ":\n" << ASCII_RESET << ASCII_WHITE;
-        for(const auto& s : numbers) {
-            cout << ASCII_BOLD << s[0] << ":" << ASCII_RESET << ASCII_WHITE << s[1] << "\n";
-        }
-        cout << ASCII_UNDERLINE << "\t\tBooleans" << ASCII_RESET << ":\n" << ASCII_RESET << ASCII_WHITE;
-        for(const auto& s : bools) {
-            cout << ASCII_BOLD << s[0] << ":" << ASCII_RESET << ASCII_WHITE << s[1] << "\n";
+        cout << ASCII_UNDERLINE << "\t\tVariables" << ASCII_RESET << ":\n" << ASCII_WHITE;
+        for(Variable v : variables) {
+            cout << ASCII_BOLD << v.getName() << "@" << v.getType() << ":" << ASCII_RESET << "" << v.getContent() << "\n";
         }
         cout << ASCII_UNDERLINE << "\t\tFunctions" << ASCII_RESET << ":\n" << ASCII_RESET << ASCII_WHITE;
         for(const auto& s : functions) {
-            cout << ASCII_BOLD << s[0] << ":" << ASCII_RESET << ASCII_WHITE << s[1] << "\n";
-        }
-        cout << ASCII_UNDERLINE << "\t\tFiles" << ASCII_RESET << ":\n" << ASCII_RESET << ASCII_WHITE;
-        for(const auto& s : files) {
             cout << ASCII_BOLD << s[0] << ":" << ASCII_RESET << ASCII_WHITE << s[1] << "\n";
         }
     }
@@ -496,7 +528,7 @@ void throwError(String error, String message, String& exceptionN, int line, bool
 int runC(String& command, String& returnS, String& exceptionN, int& line, bool onFunction = false, String functionName = "", int line2 = 0, String runnedFunctionAs = "", bool onTry = false);
 
 // Util Functions for compile
-void translateString(String& s, int line, String& exceptionN, bool onFunction, String functionName, int line2, bool onTry) {
+void translateString(String& s, int line, String& exceptionN) {
     removeSpacesOutsideQuotes(s);
     String result = "";
 
@@ -556,6 +588,34 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                         if(call == var.getName()) {
                             result += var.getContent();
                             found = true;
+                        }
+                    }
+
+                    if(call.substr(0, 4) == "read") {
+                        String varName = s.substr(4);
+
+                        for(File file : files) {
+                            if(file.getName() == varName) {
+                                if(!file.isOpen()) {
+                                    throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
+                                } else {
+                                    result += file.read();
+                                    found = true;
+                                }
+                            }
+                        }
+                    } else if(s.substr(0, 4) == "open") {
+                        String varName = s.substr(4);
+
+                        for(File file : files) {
+                            if(file.getName() == varName) {
+                                if(file.isOpen()) {
+                                    result += "true";
+                                } else {
+                                    result += "false";
+                                }
+                                found = true;
+                            }
                         }
                     }
 
@@ -622,53 +682,32 @@ void translateString(String& s, int line, String& exceptionN, bool onFunction, S
                     }
                 }
 
-                for(const auto& v : files) {
-                    try {
-                        String fileVariableName = call.substr(0, call.find("."));
+                if(call.substr(0, 4) == "read") {
+                    String varName = s.substr(4);
 
-                        if(call == fileVariableName + ".read()") {
-                            fstream f(v[1]);
-
-                            String txt, line;
-                            while(getline(f, line)) {
-                                txt += line + "\n";
-                            }
-
-                            f.close();
-
-                            result += txt;
-                            found = true;
-                        } else if(call.substr(0, fileVariableName.length() + 8) == fileVariableName + ".readli(") {
-                            String args = call.substr(fileVariableName.length() + 8);
-                            args.pop_back();
-
-                            try {
-                                int lineNumber = stoi(args); // This might throw invalid_argument
-
-                                fstream f(v[1]);
-                                String txtline, txtline2;
-                                int i = 0;
-
-                                while(getline(f, txtline)) {
-                                    if(i == lineNumber) {
-                                        txtline2 = txtline;
-                                    }
-                                    i++;
-                                }
-
-                                f.close();
-
-                                if(txtline2.empty()) {
-                                    throwError("epi2.error.syntax.outofbounds", "You passed the max number of a list.", exceptionN, line, onFunction, functionName, line2, onTry);
-                                } else {
-                                    result += txtline2;
-                                    found = true;
-                                }
-                            } catch(invalid_argument& e) {
-                                throwError("epi2.error.syntax.notanumber", "The value that you entered isn't a number.", exceptionN, line, onFunction, functionName, line2, onTry);
+                    for(File file : files) {
+                        if(file.getName() == varName) {
+                            if(!file.isOpen()) {
+                                throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
+                            } else {
+                                result += file.read();
+                                found = true;
                             }
                         }
-                    } catch(exception& e) {}
+                    }
+                } else if(s.substr(0, 4) == "open") {
+                    String varName = s.substr(4);
+
+                    for(File file : files) {
+                        if(file.getName() == varName) {
+                            if(file.isOpen()) {
+                                result += "true";
+                            } else {
+                                result += "false";
+                            }
+                            found = true;
+                        }
+                    }
                 }
 
                 if (!found) {
@@ -718,10 +757,10 @@ bool validateVariableName(const string& n) {
     return true;
 }
 
-Variable analyze(String s, int line, String& exceptionN, bool onFunction, String functionName, int line2, bool onTry) {
+Variable analyze(String s, int line, String& exceptionN) {
     String i = s;
     String type, content;
-    translateString(i, line, exceptionN, onFunction, functionName, line2, onTry);
+    translateString(i, line, exceptionN);
 
     if(i == "true" || i == "false") {
         type = "boolean";
@@ -884,7 +923,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                 }
                 return 0;
             } else {
-                throwError("epi2.error.lang.nocatchaftertry", "You should put a catch statemet after a try statement.", exceptionN, line, onFunction, functionName, line2, onTry);
+                throwError("epi2.error.lang.nocatchaftertry", "You should put a catch statemet after a try statement.", exceptionN, line);
                 return 1;
             }
         }
@@ -930,28 +969,28 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             // @example print "Hello, " + username + "!"
             // @since v_0.1
             String s = command.substr(desCommand.length() + 1);
-            translateString(s, line, exceptionN, onFunction, functionName, line2, onTry);
+            translateString(s, line, exceptionN);
             cout << s << "\n";
         } else if(desCommand == "printc") {
             // print function is for printing text into the screen but without new line
             // @example printc "Hello, " + username + "!"
             // @since v_0.1
             String s = command.substr(desCommand.length() + 1);
-            translateString(s, line, exceptionN, onFunction, functionName, line2, onTry);
+            translateString(s, line, exceptionN);
             cout << s;
         } else if(desCommand == "cmd") {
             // cmd function is for running a command line command
             // @example cmd "winver"
             // @since v_0.1
             String s = command.substr(desCommand.length() + 1);
-            translateString(s, line, exceptionN, onFunction, functionName, line2, onTry);
+            translateString(s, line, exceptionN);
             system(s.c_str());
         } else if(desCommand == "var") {
             String s = command.substr(desCommand.length() + 1);
             String name = s.substr(0, s.find_first_of(' '));
 
             if(nameAlreadyUsed(name)) {
-                throwError("epi2.error.variables.redefinition", "That name is already used for a variable.", exceptionN, line, onFunction, functionName, line2, onTry);
+                throwError("epi2.error.variables.redefinition", "That name is already used for a variable.", exceptionN, line);
                 return -1;
             }
 
@@ -960,12 +999,12 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     removeSpacesOutsideQuotes(s);
                     String content = s.substr(s.find_first_of("=") + 1);
 
-                    Variable t = analyze(content, line, exceptionN, onFunction, functionName, line2, onTry);
+                    Variable t = analyze(content, line, exceptionN);
 
                     Variable var(t.getType(), name, t.getContent());
                     variables.push_back(var);
                 } else {
-                    throwError("epi2.syntax.variables.definition", "Missing equal expression for definig a variable.", exceptionN, line, onFunction, functionName, line2, onTry);
+                    throwError("epi2.syntax.variables.definition", "Missing equal expression for definig a variable.", exceptionN, line);
                 }
             } else {
                 if(s.substr(s.find_first_of(' ') + 1, 2) == "as") {
@@ -976,13 +1015,13 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                             Variable var(t, name, "");
                             variables.push_back(var);
                         } else {
-                            throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line, onFunction, functionName, line2, onTry);
+                            throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line);
                         }
                     } catch(out_of_range&) {
-                        throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line, onFunction, functionName, line2, onTry);
+                        throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line);
                     }
                 } else {
-                    throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line, onFunction, functionName, line2, onTry);
+                    throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line);
                 }
             }
         } else if(desCommand == "function") {
@@ -992,14 +1031,14 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             String args = command.substr(desCommand.length() + 1);
 
             if(args.back() != ':') {
-                throwError("epi2.functions.baddefinition", "A function should always be defined with code.", exceptionN, line, onFunction, functionName, line2, onTry);
+                throwError("epi2.functions.baddefinition", "A function should always be defined with code.", exceptionN, line);
                 return 1;
             }
 
             String name = args.substr(0, args.length() - 1);
 
             if(!validateVariableName(name)) {
-                throwError("epi2.functions.baddeclaration", "The name you choose for the function isn't valid.", exceptionN, line, onFunction, functionName, line2, onTry);
+                throwError("epi2.functions.baddeclaration", "The name you choose for the function isn't valid.", exceptionN, line);
                 return 1;
             }
 
@@ -1020,23 +1059,23 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             for(Variable& var : variables) {
                 if(varToWrite == var.getName()) {
                     String content = command.substr(desCommand.length() + 1);
-                    Variable var2(analyze(content, line, exceptionN, onFunction, functionName, line2, onTry));
+                    Variable var2(analyze(content, line, exceptionN));
                     if(var2.getType() == var.getType()) {
-                        translateString(content, line, exceptionN, onFunction, functionName, line2, onTry);
+                        translateString(content, line, exceptionN);
                         var.setContent(content);
                         return 0;
                     } else {
                         if(var2.getType() == "number" && var.getType() == "string") {
-                            translateString(content, line, exceptionN, onFunction, functionName, line2, onTry);
+                            translateString(content, line, exceptionN);
                             var.setContent(content);
                             return 0;    
                         }
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + var2.getType() + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + var2.getType() + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
                         return -1;
                     }
                 }
             }
-            throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line, onFunction, functionName, line2, onTry);
+            throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line);
         } else if(command.length() >= 1 && command.substr(0,1) == "@") {
             return 0;
         } else if(desCommand.length() >= 1 && desCommand.substr(0,1) == "#") {
@@ -1069,7 +1108,7 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             } else {
                 try {
                     String retText = command.substr(desCommand.length() + 1);
-                    translateString(retText, line, exceptionN, onFunction, functionName, line2, onTry);
+                    translateString(retText, line, exceptionN);
                     returnS = retText;
                     return 0;
                 } catch(exception&) {
@@ -1089,12 +1128,12 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                         return 0;
                     } else {
                         if(typeIn(r) == "number" && typeIn(r) == "string") {
-                            translateString(r, line, exceptionN, onFunction, functionName, line2, onTry);
+                            translateString(r, line, exceptionN);
                             var.setContent(r);
                             return 0;    
                         }
                         
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + analyze(r, line, exceptionN, onFunction, functionName, line2, onTry).getType() + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + analyze(r, line, exceptionN).getType() + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
                         return -1;
                     }
                 }
@@ -1132,12 +1171,12 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                     String s = command.substr(desCommand.length() + 1);
                     String t = splitOutsideQuotes(s, ',')[1];
                     String m = splitOutsideQuotes(s, ',')[0];
-                    translateString(t, line, exceptionN, onFunction, functionName, line2, onTry);
-                    translateString(m, line, exceptionN, onFunction, functionName, line2, onTry);
+                    translateString(t, line, exceptionN);
+                    translateString(m, line, exceptionN);
                     showDialog(m, t);
                 } else {
                     String s = command.substr(desCommand.length() + 1);
-                    translateString(s, line, exceptionN, onFunction, functionName, line2, onTry);
+                    translateString(s, line, exceptionN);
                     showDialog(s, "epi2");
                 }
             } else {
@@ -1157,11 +1196,11 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                         return 0;
                     } else {
                         if(typeIn(r) == "number" && var.getType() == "string") {
-                            translateString(r, line, exceptionN, onFunction, functionName, line2, onTry);
+                            translateString(r, line, exceptionN);
                             var.setContent(r);
                             return 0;    
                         }
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + typeIn(r) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + typeIn(r) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
                         return -1;
                     }
                 }
@@ -1174,13 +1213,13 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
         } else if(desCommand == "inp") {
             String s = command.substr(desCommand.length() + 1);
             if(s.find(" ") == std::string::npos) {
-                throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line, onFunction, functionName, line2, onTry);
+                throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
                 exceptionN = "epi2.error.lang.missingargs";
                 return 1;
             }
             String vName = splitOutsideQuotes(s, ' ')[0];
             String text = splitOutsideQuotes(s, ' ')[1];
-            translateString(text, line, exceptionN, onFunction, functionName, line2, onTry);
+            translateString(text, line, exceptionN);
 
             String r = takePasswdFromUser(text);
 
@@ -1191,11 +1230,11 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
                         return 0;
                     } else {
                         if(typeIn(r) == "number" && var.getType() == "string") {
-                            translateString(r, line, exceptionN, onFunction, functionName, line2, onTry);
+                            translateString(r, line, exceptionN);
                             var.setContent(r);
                             return 0;    
                         }
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + typeIn(r) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line, onFunction, functionName, line2, onTry);
+                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + typeIn(r) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
                         return -1;
                     }
                 }
@@ -1208,89 +1247,114 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
         } else if(   command == "try:") {
             writingTry = true;
         } else if(desCommand == "File") {
-            String s = command.substr(desCommand.length() + 1);
-            removeSpacesOutsideQuotes(s);
-            if(s.find('(') == std::string::npos) {
-                String varName = s.substr(0, s.find('('));
-                if(!isStringOn2DVector(strings, 0, varName) && !isStringOn2DVector(numbers, 0, varName) && !isStringOn2DVector(bools, 0, varName) && !isStringOn2DVector(objects, 0, varName) && !isStringOn2DVector(functions, 0, varName) && !isStringOn2DVector(files, 0, varName)) {
-                    if(validateVariableName(varName)) {
-                        try {
-                            String varContent = s.substr(s.find('(') + 1);
-                            varContent = varContent.substr(0, varContent.find(')'));
-                            translateString(varContent, line, exceptionN, onFunction, functionName, line2, onTry);
-                            vector<String> v = {varName, varContent};
-                            files.push_back(v);
-                        } catch(exception&) {
-                            throwError("epi2.error.file.definition.missingfilename", "You should define the filename on the declaration of that variable.", exceptionN, line);
-                        }
-                    } else {
-                        throwError("epi2.error.variable.invalidname", "You can't use that as variable name, only use characters from a to z, from A to Z, and numbers from 0 to 9 and should start with a character.", exceptionN, line, onFunction, functionName, line2, onTry);
-                        exceptionN = "epi2.error.variable.invalidname";
-                        return 1;
-                    }
-                } else {
-                    throwError("epi2.error.variable.redefinition", "You can't recreate a variable with the same name.", exceptionN, line, onFunction, functionName, line2, onTry);
-                    exceptionN = "epi2.error.variable.redefinition";
-                    return 1; 
-                }
+            String args = command.substr(desCommand.length() + 1);
+            removeSpacesOutsideQuotes(args);
+    
+            if(args.find("is") != string::npos) {
+                // The code defined a filename
+                String varName = args.substr(0, findFirstIndexOutsideQuotes(args, "is"));
+                String filename = args.substr(varName.length() + 2);
+
+                translateString(filename, line, exceptionN);
+
+                File file(varName, filename);
+
+                files.push_back(file);
             } else {
-                throwError("epi2.error.file.definition.missingfilename", "You should define the filename on the declaration of that variable.", exceptionN, line, onFunction);
-            }
-        } else {
-            for(const auto& v : files) {
-                try {
-                    if(command.substr(0,v[0].length()) == v[0]) {
-                        if(command.find(' ') == std::string::npos) {
-                            String function = command.substr(v[0].length() + 1);
-                            function = function.substr(0, function.find(" "));
-                            
-                            if(function == "write") {
-                                fstream f(v[1]);
-                                String text = "";
-                                if(f.good()) {
-                                    String line;
-                                    while(getline(f, line)) {
-                                        text += line + "\n";
-                                    }
-                                }
-                                
-                                ofstream fa(v[1]);
-                                String t;
-                                try {
-                                    t = command.substr(v[0].length() + 1 + function.length() + 1);
-                                    translateString(t, line, exceptionN, onFunction, functionName, line2, onTry);
-                                } catch(out_of_range&) {
-                                    throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line, onFunction, functionName, line2, onTry);
-                                }
-                                fa << text << t;
-                                fa.close();
-                                return 0;
-                            } else if(function == "ovwrite") {
-                                ofstream f(v[1]);
-                                String t;
-                                try {
-                                    t = command.substr(v[0].length() + 1 + function.length() + 1);
-                                    translateString(t, line, exceptionN, onFunction, functionName, line2, onTry);
-                                } catch(out_of_range&) {
-                                    throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line, onFunction, functionName, line2, onTry);
-                                }
-                                f << t;
-                                f.close();
-                                return 0;
-                            }
-                        } else {
-                            String function = command.substr(v[0].length() + 1);
+                // The code didn't defined a filename
+                String varName = args;
 
-                            if(function == "delete") {
-                                remove(v[1].c_str());
-                                return 0;
-                            }
-                        }
+                File file(varName, "");
+
+                files.push_back(file);
+            }
+        } else if(desCommand == "append") {
+            String text, varName, args = command.substr(desCommand.length() + 1);
+
+            removeSpacesOutsideQuotes(args);
+
+            text = args.substr(0, findFirstIndexOutsideQuotes(args, "to"));
+            varName = args.substr(text.length() + 2);
+            translateString(text, line, exceptionN);
+
+            for(File file : files) {
+                if(file.getName() == varName) {
+                    if(!file.isOpen()) {
+                        throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
+                        return -1;
                     }
-                } catch(exception&) {}
+
+                    file.write(file.read() + text);
+                    return 0;
+                }
             }
 
-            throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line, onFunction, functionName, line2, onTry);
+            throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
+            return -1;
+        } else if(desCommand == "write") {
+            String text, varName, args = command.substr(desCommand.length() + 1);
+
+            removeSpacesOutsideQuotes(args);
+
+            text = args.substr(0, findFirstIndexOutsideQuotes(args, "to"));
+            varName = args.substr(text.length() + 2);
+            translateString(text, line, exceptionN);
+
+            for(File file : files) {
+                if(file.getName() == varName) {
+                    if(!file.isOpen()) {
+                        throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
+                        return -1;
+                    }
+
+                    file.write(text);
+                    return 0;
+                }
+            }
+
+            throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
+            return -1;
+        } else if(desCommand == "open") {
+            String varName, filename, args = command.substr(desCommand.length() + 1);
+
+            removeSpacesOutsideQuotes(args);
+
+            varName = args.substr(0, findFirstIndexOutsideQuotes(args, "at"));
+            filename = args.substr(varName.length() + 2);
+
+            translateString(filename, line, exceptionN);
+
+            for(File file : files) {
+                if(file.getName() == varName) {
+                    file.open(filename);
+                    return 0;
+                }
+            }
+
+            throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
+            return -1;
+        } else if(desCommand == "delete") {
+            String varName, args = command.substr(desCommand.length() + 1);
+
+            removeSpacesOutsideQuotes(args);
+            varName = args;
+
+            for(File file : files) {
+                if(file.getName() == varName) {
+                    if(!file.isOpen()) {
+                        throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
+                        return -1;
+                    }
+
+                    file.deletef();
+                    return 0;
+                }
+            }
+
+            throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
+            return -1;
+        } else {
+            throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line);
             exceptionN = "epi2.lang.unexpected.notacommand";
             return 1;
         }

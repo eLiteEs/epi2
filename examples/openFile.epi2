@@ -1,0 +1,5 @@
+File file
+
+open file at "file.txt"
+
+write "Hello World!" to file

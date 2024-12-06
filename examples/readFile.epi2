@@ -1,0 +1,5 @@
+File file is "file"
+
+write "Hello" to file
+
+print read file

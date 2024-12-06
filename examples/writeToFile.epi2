@@ -1,0 +1,4 @@
+File file is "file.txt"
+
+@ Write to file and create it if necessary
+write "Hello World!" to file

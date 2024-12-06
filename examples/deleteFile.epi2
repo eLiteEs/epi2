@@ -1,0 +1,10 @@
+File file is "file.txt"
+
+@ Write text to the file and create it if necessary
+write "Hello World!" to file
+
+@ Wait for the user to press enter
+in dummy
+
+@ Delete the file
+delete file
