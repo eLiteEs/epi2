@@ -10,6 +10,17 @@
     {
         "name": "Output and Input text in the Console",
         "source": "output-and-input.md"
+    },
+    {
+        "name": "Variables",
+        "source": "variables.md"
+    },
+    {
+        "name": "Functions",
+        "source": "functions.md"
+    },
+    {
+        "name": "Variable Functions",
+        "source": "variable-functions.md"
     }
-    
 ]

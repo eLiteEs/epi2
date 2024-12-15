@@ -1918,7 +1918,7 @@ int run(String& command, String& returnS, string& exceptionN, int& line, int lin
             return 1;
         }
         String vName = splitOutsideQuotes(s, ' ')[0];
-        String text = splitOutsideQuotes(s, ' ')[1];
+        String text = s.substr(vName.length() + 1);
         translateString(text, line, exceptionN);
 
         String r = takePasswdFromUser(text);
