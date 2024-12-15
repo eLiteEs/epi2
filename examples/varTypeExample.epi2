@@ -1,0 +1,9 @@
+printc "Enter a number: "
+
+in num
+
+switch num.Type
+    case "number"
+        print "Valid input!"
+    default
+        print "Invalid input!"

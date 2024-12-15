@@ -1,0 +1,4 @@
+@ This program has a large documentation
+( So it would need more of one line of comments
+( This program prints "Hello, World!"
+print "Hello, World!"

@@ -1,0 +1,57 @@
+name: Build C++
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    
+    - name: Compile for Windows
+      run: |
+        g++ src/epi.cpp -o epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
+
+    
+    - name: Upload executables
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-executable
+        path: |
+          epi2.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Compile for Linux
+        run: |
+          # Install required libraries
+          sudo apt install libncurses5-dev libncursesw5-dev
+          sudo apt install libcurl4-openssl-dev
+          
+          # Create output folder
+          mkdir linux-target
+          
+          # Comile program using g++
+          g++ src/epi.cpp -o linux-target/epi2 -lncurses -lcurl
+
+      - name: Upload executables
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-executable
+          path: |
+            linux-target/epi2

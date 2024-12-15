@@ -1,0 +1,11 @@
+printc "Enter username: "
+in username
+
+switch username
+    case "admin"
+        print "Hello, Admin!"
+        print "Admin stuff:"
+    case "hacker"
+        print "You're not welcome here"
+    default
+        print "Hello, " + username

@@ -289,6 +289,58 @@ String getIndexFromArgumentList(int ind, char** arr) {
     String s(arr[ind]);
     return s;
 }
+std::vector<std::string> splitStringUsingString(const std::string& input, const std::string& delimiter) {
+    std::vector<std::string> result;
+    size_t start = 0;
+    size_t end = input.find(delimiter);
+
+    while (end != std::string::npos) {
+        std::string token = input.substr(start, end - start);
+        if (!token.empty()) {
+            result.push_back(token);
+        }
+
+        start = end + delimiter.length();
+        end = input.find(delimiter, start);
+    }
+
+    std::string lastToken = input.substr(start);
+    if (!lastToken.empty()) {
+        result.push_back(lastToken);
+    }
+
+    return result;
+}
+std::string encryptText(const std::string& plainText, const std::string& key) {
+    std::string encryptedText = plainText;
+
+    for (size_t i = 0; i < plainText.size(); ++i) {
+        encryptedText[i] ^= key[i % key.size()];
+    }
+
+    return encryptedText;
+}
+std::string replaceNthOccurrence(const std::string& original, const std::string& toFind, const std::string& replacement, size_t occurrence) {
+    size_t index = 0;
+    size_t count = 0;
+
+    while ((index = original.find(toFind, index)) != std::string::npos) {
+        count++;
+        if (count == occurrence) {
+            return original.substr(0, index) + replacement + original.substr(index + toFind.size());
+        }
+        index += toFind.size();
+    }
+
+    throw out_of_range("");
+}
+void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+    }
+}
 
 // Variables for storing variables
 vector<vector<String>> functions;
@@ -525,7 +577,29 @@ void throwError(String error, String message, String& exceptionN, int line, bool
     }
 }
 
-int runC(String& command, String& returnS, String& exceptionN, int& line, bool onFunction = false, String functionName = "", int line2 = 0, String runnedFunctionAs = "", bool onTry = false);
+int findFirstIndexOutsideQuotes(const std::string& input, const std::string& target) {
+    bool inQuotes = false;
+    size_t inputLength = input.length();
+    size_t targetLength = target.length();
+
+    for (size_t i = 0; i <= inputLength - targetLength; ++i) {
+        if (input[i] == '"' || input[i] == '\'') {
+            inQuotes = !inQuotes;  // Toggle the inQuotes flag
+        }
+
+        if (!inQuotes && input.substr(i, targetLength) == target) {
+            return i;  // Found the target outside quotes, return the index
+        }
+    }
+
+    return -1;  // Target not found outside quotes
+}
+
+int runC(String& command, String& returnS, String& exceptionN, int& line, bool onFunction = false, String functionName = "", int line2 = 0, String runnedFunctionAs = "", bool onTry = false, bool checkCase = false);
+int run(String& command, String& returnS, string& exceptionN, int& line, int line2 = 0);
+int compile(String& command, String& returnS, String& exceptionN, int& line);
+
+String typeIn(String content);
 
 // Util Functions for compile
 void translateString(String& s, int line, String& exceptionN) {
@@ -566,7 +640,7 @@ void translateString(String& s, int line, String& exceptionN) {
                             if(functionName == vec[0]) {
                                 for(String& s : splitString(vec[1], '\n')) {
                                     String exc = "", ret = "";
-                                    runC(s, ret, exc, line, true, vec[0]);
+                                    compile(s, ret, exc, line);
                                     
                                     if(ret != "") {
                                         result += ret;
@@ -585,9 +659,307 @@ void translateString(String& s, int line, String& exceptionN) {
                     }
 
                     for(Variable var : variables) {
-                        if(call == var.getName()) {
-                            result += var.getContent();
-                            found = true;
+                        if(findFirstIndexOutsideQuotes(call, ".") != -1) {
+                            if(call.substr(0, findFirstIndexOutsideQuotes(call, ".")) == var.getName()) {
+                                if(call.substr(var.getName().length(), 1) == ".") {
+                                    string modifiers = call.substr(var.getName().length() + 1);
+                                    
+                                    if(modifiers == "Value") {
+                                        result += var.getContent();
+                                        found = true;
+                                    } else if(modifiers == "Type") {
+                                        result += typeIn(var.getContent());
+                                        found = true;
+                                    }
+
+                                    try {
+                                        if(modifiers.substr(0, 7) == "Equals(") {
+                                            string args = modifiers.substr(7);
+                                            args.pop_back();
+
+                                            translateString(args, line, exceptionN);
+                                            
+                                            if(args == var.getContent()) {
+                                                result += "true";
+                                            } else {
+                                                result += "false";
+                                            }
+                                            found = true;
+                                        }
+                                    } catch(exception&) {}
+
+                                    if(var.getType() == "string") {
+                                        if(modifiers == "Length") {
+                                            result += to_string(var.getContent().length());
+                                            found = true;
+                                        } else if(modifiers == "Empty") {
+                                            if(var.getContent().empty()) {
+                                                result += "true";
+                                            } else {
+                                                result += "false";
+                                            }
+                                            found = true;
+                                        } else if(modifiers == "IsNumber") {
+                                            if(typeIn(var.getContent()) == "number") {
+                                                result += "true";
+                                            } else {
+                                                result += "false";
+                                            }
+                                            found = true;
+                                        } else if(modifiers == "IsBoolean") {
+                                            if(typeIn(var.getContent()) == "boolean") {
+                                                result += "true";
+                                            } else {
+                                                result += "false";
+                                            }
+                                            found = true;
+                                        }
+
+                                        try {
+                                            if(modifiers.substr(0, 10) == "Substring(") {
+                                                string args = modifiers.substr(10);
+                                                args.pop_back();
+
+                                                if(findFirstIndexOutsideQuotes(args, ",") != -1) {
+                                                    removeSpacesOutsideQuotes(args);
+
+                                                    string firstnum = splitOutsideQuotes(args, ',')[0];
+                                                    string secondnum = splitOutsideQuotes(args, ',')[1];
+
+                                                    translateString(firstnum, line, exceptionN);
+                                                    translateString(secondnum, line, exceptionN);
+
+                                                    if(typeIn(firstnum) == "number" && typeIn(secondnum) == "number") {
+                                                        try {
+                                                            result += var.getContent().substr(stoi(firstnum), stoi(secondnum));
+                                                            found = true;
+                                                        } catch(invalid_argument&) {
+                                                            // Throw invalid_argument
+                                                            throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                            exit(-1);
+                                                        } catch(out_of_range&) {
+                                                            // Throw invalid_argument
+                                                            throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                            exit(-1);
+                                                        }
+                                                    } else {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                        exit(-1);
+                                                    }
+                                                } else {
+                                                    throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+                                                }
+                                            } else if(modifiers.substr(0, 5) == "Find(") {
+                                                string args = modifiers.substr(5);
+                                                args.pop_back();
+
+                                                translateString(args, line, exceptionN);
+
+                                                result += to_string(findFirstIndexOutsideQuotes(var.getContent(), args));
+
+                                                found = true;
+                                            } else if(modifiers.substr(0, 9) == "Contains(") {
+                                                string args = modifiers.substr(9);
+                                                args.pop_back();
+
+                                                translateString(args, line, exceptionN);
+
+                                                if(var.getContent().find(args) != string::npos) {
+                                                    result += "true";
+                                                } else {
+                                                    result += "false";
+                                                }
+                                                found = true;
+                                            } else if(modifiers.substr(0, 4) == "Add(") {
+                                                string args = modifiers.substr(4);
+                                                args.pop_back();
+
+                                                translateString(args, line, exceptionN);
+
+                                                result = var.getContent() + args;
+                                                found = true;
+                                            } else if(modifiers.substr(0, 7) == "Insert(") {
+                                                string args = modifiers.substr(7);
+                                                args.pop_back();
+
+                                                if(findFirstIndexOutsideQuotes(args, ",") != -1) {
+                                                    removeSpacesOutsideQuotes(args);
+
+                                                    string firstnum = splitOutsideQuotes(args, ',')[0];
+                                                    string text = splitOutsideQuotes(args, ',')[1];
+
+                                                    translateString(firstnum, line, exceptionN);
+                                                    translateString(text, line, exceptionN);
+
+                                                    if(typeIn(firstnum) == "number") {
+                                                        try {
+                                                            string part1 = var.getContent().substr(0, stoi(firstnum)), part2 = var.getContent().substr(stoi(firstnum));
+
+                                                            result += part1 + text + part2;
+                                                            found = true;
+                                                        } catch(invalid_argument&) {
+                                                            // Throw invalid_argument
+                                                            throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                            exit(-1);
+                                                        } catch(out_of_range&) {
+                                                            // Throw invalid_argument
+                                                            throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                            exit(-1);
+                                                        }
+                                                    } else {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                        exit(-1);
+                                                    }
+                                                } else {
+                                                    throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+                                                }
+                                            } else if(modifiers.substr(0, 3) == "At(") {
+                                                string args = modifiers.substr(3);
+                                                args.pop_back();
+
+                                                translateString(args, line, exceptionN);
+
+                                                if(typeIn(args) == "number") {
+                                                    try {
+                                                        result += var.getContent().at(stoi(args));
+                                                        found = true;
+                                                    } catch(invalid_argument&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                        exit(-1);
+                                                    } catch(out_of_range&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                        exit(-1);
+                                                    }
+                                                } else {
+                                                    // Throw invalid_argument
+                                                    throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                    exit(-1);
+                                                }
+                                            } else if(modifiers.substr(0,6) == "Split(") {
+                                                string args = modifiers.substr(6);
+                                                args.pop_back();
+
+                                                if(findFirstIndexOutsideQuotes(args, ",") != -1) {
+                                                    removeSpacesOutsideQuotes(args);
+
+                                                    string delimeter = splitOutsideQuotes(args, ',')[0];
+                                                    string index = splitOutsideQuotes(args, ',')[1];
+
+                                                    translateString(delimeter, line, exceptionN);
+                                                    translateString(index, line, exceptionN);
+
+                                                    if(typeIn(index) == "number") {
+                                                        try {
+                                                            result += splitStringUsingString(var.getContent(), delimeter)[stoi(index)];
+                                                            found = true;
+                                                        } catch(invalid_argument&) {
+                                                            // Throw invalid_argument
+                                                            throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                            exit(-1);
+                                                        } catch(out_of_range&) {
+                                                            // Throw invalid_argument
+                                                            throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                            exit(-1);
+                                                        }
+                                                    } else {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                        exit(-1);
+                                                    }
+                                                } else {
+                                                    throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+                                                }
+                                            } else if(modifiers.substr(0, 6) == "Crypt(") {
+                                                string args = modifiers.substr(6);
+                                                args.pop_back();
+
+                                                translateString(args, line, exceptionN);
+
+                                                result += encryptText(var.getContent(), args);
+                                                found = true;
+                                            } else if(modifiers.substr(0, 13) == "ReplaceIndex(") {
+                                                string args = modifiers.substr(13);
+                                                args.pop_back();
+
+                                                if(findFirstIndexOutsideQuotes(args, ",") != -1) {
+                                                    removeSpacesOutsideQuotes(args);
+
+                                                    string index = splitOutsideQuotes(args, ',')[0];
+                                                    string match = splitOutsideQuotes(args, ',')[1];
+                                                    string replaceWith = splitOutsideQuotes(args, ',')[2];
+
+                                                    translateString(index, line, exceptionN);
+                                                    translateString(match, line, exceptionN);
+                                                    translateString(replaceWith, line, exceptionN);
+
+                                                    if(typeIn(index) == "number") {
+                                                        try {
+                                                            result += replaceNthOccurrence(var.getContent(), match, replaceWith, stoi(index) + 1);
+                                                            found = true;
+                                                        } catch(invalid_argument&) {
+                                                            // Throw invalid_argument
+                                                            throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                            exit(-1);
+                                                        } catch(out_of_range&) {
+                                                            // Throw invalid_argument
+                                                            throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                            exit(-1);
+                                                        }
+                                                    } else {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                        exit(-1);
+                                                    }
+                                                } else {
+                                                    throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+                                                }
+                                            } else if(modifiers.substr(0,11) == "ReplaceAll(") {
+                                                string args = modifiers.substr(11);
+                                                args.pop_back();
+
+                                                if(findFirstIndexOutsideQuotes(args, ",") != -1) {
+                                                    removeSpacesOutsideQuotes(args);
+
+                                                    string match = splitOutsideQuotes(args, ',')[0];
+                                                    string replaceWith = splitOutsideQuotes(args, ',')[1];
+
+                                                    translateString(match, line, exceptionN);
+                                                    translateString(replaceWith, line, exceptionN);
+
+                                                    try {
+                                                        String original = var.getContent();
+                                                        replaceAll(original, match, replaceWith);
+                                                        result += original;
+                                                        found = true;
+                                                    } catch(invalid_argument&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                        exit(-1);
+                                                    } catch(out_of_range&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                        exit(-1);
+                                                    }
+                                                } else {
+                                                    throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+                                                }
+                                            }
+                                        } catch(exception&) {}
+                                    }
+                                } else {
+                                    result += var.getContent();
+                                    found = true;
+                                }
+                            }
+                        } else {
+                            if(call == var.getName()) {
+                                result += var.getContent();
+                                found = true;
+                            }
                         }
                     }
 
@@ -657,7 +1029,7 @@ void translateString(String& s, int line, String& exceptionN) {
                         if(functionName == vec[0]) {
                             for(String& s : splitString(vec[1], '\n')) {
                                 String exc = "", ret = "";
-                                runC(s, ret, exc, line, true, vec[0]);
+                                compile(s, ret, exc, line);
                                 
                                 if(ret != "") {
                                     result += ret;
@@ -676,9 +1048,307 @@ void translateString(String& s, int line, String& exceptionN) {
                 }
 
                 for(Variable var : variables) {
-                    if(call == var.getName()) {
-                        result += var.getContent();
-                        found = true;
+                    if(findFirstIndexOutsideQuotes(call, ".") != -1) {
+                        if(call.substr(0, findFirstIndexOutsideQuotes(call, ".")) == var.getName()) {
+                            if(call.substr(var.getName().length(), 1) == ".") {
+                                string modifiers = call.substr(var.getName().length() + 1);
+                                
+                                if(modifiers == "Value") {
+                                    result += var.getContent();
+                                    found = true;
+                                } else if(modifiers == "Type") {
+                                    result += typeIn(var.getContent());
+                                    found = true;
+                                }
+
+                                try {
+                                    if(modifiers.substr(0, 7) == "Equals(") {
+                                        string args = modifiers.substr(7);
+                                        args.pop_back();
+
+                                        translateString(args, line, exceptionN);
+                                        
+                                        if(args == var.getContent()) {
+                                            result += "true";
+                                        } else {
+                                            result += "false";
+                                        }
+                                        found = true;
+                                    }
+                                } catch(exception&) {}
+
+                                if(var.getType() == "string") {
+                                    if(modifiers == "Length") {
+                                        result += to_string(var.getContent().length());
+                                        found = true;
+                                    } else if(modifiers == "Empty") {
+                                        if(var.getContent().empty()) {
+                                            result += "true";
+                                        } else {
+                                            result += "false";
+                                        }
+                                        found = true;
+                                    } else if(modifiers == "IsNumber") {
+                                        if(typeIn(var.getContent()) == "number") {
+                                            result += "true";
+                                        } else {
+                                            result += "false";
+                                        }
+                                        found = true;
+                                    } else if(modifiers == "IsBoolean") {
+                                        if(typeIn(var.getContent()) == "boolean") {
+                                            result += "true";
+                                        } else {
+                                            result += "false";
+                                        }
+                                        found = true;
+                                    }
+
+                                    try {
+                                        if(modifiers.substr(0, 10) == "Substring(") {
+                                            string args = modifiers.substr(10);
+                                            args.pop_back();
+
+                                            if(findFirstIndexOutsideQuotes(args, ",") != -1) {
+                                                removeSpacesOutsideQuotes(args);
+
+                                                string firstnum = splitOutsideQuotes(args, ',')[0];
+                                                string secondnum = splitOutsideQuotes(args, ',')[1];
+
+                                                translateString(firstnum, line, exceptionN);
+                                                translateString(secondnum, line, exceptionN);
+
+                                                if(typeIn(firstnum) == "number" && typeIn(secondnum) == "number") {
+                                                    try {
+                                                        result += var.getContent().substr(stoi(firstnum), stoi(secondnum));
+                                                        found = true;
+                                                    } catch(invalid_argument&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                        exit(-1);
+                                                    } catch(out_of_range&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                        exit(-1);
+                                                    }
+                                                } else {
+                                                    // Throw invalid_argument
+                                                    throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                    exit(-1);
+                                                }
+                                            } else {
+                                                throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+                                            }
+                                        } else if(modifiers.substr(0, 5) == "Find(") {
+                                            string args = modifiers.substr(5);
+                                            args.pop_back();
+
+                                            translateString(args, line, exceptionN);
+
+                                            result += to_string(findFirstIndexOutsideQuotes(var.getContent(), args));
+
+                                            found = true;
+                                        } else if(modifiers.substr(0, 9) == "Contains(") {
+                                            string args = modifiers.substr(9);
+                                            args.pop_back();
+
+                                            translateString(args, line, exceptionN);
+
+                                            if(var.getContent().find(args) != string::npos) {
+                                                result += "true";
+                                            } else {
+                                                result += "false";
+                                            }
+                                            found = true;
+                                        } else if(modifiers.substr(0, 4) == "Add(") {
+                                            string args = modifiers.substr(4);
+                                            args.pop_back();
+
+                                            translateString(args, line, exceptionN);
+
+                                            result = var.getContent() + args;
+                                            found = true;
+                                        } else if(modifiers.substr(0, 7) == "Insert(") {
+                                            string args = modifiers.substr(7);
+                                            args.pop_back();
+
+                                            if(findFirstIndexOutsideQuotes(args, ",") != -1) {
+                                                removeSpacesOutsideQuotes(args);
+
+                                                string firstnum = splitOutsideQuotes(args, ',')[0];
+                                                string text = splitOutsideQuotes(args, ',')[1];
+
+                                                translateString(firstnum, line, exceptionN);
+                                                translateString(text, line, exceptionN);
+
+                                                if(typeIn(firstnum) == "number") {
+                                                    try {
+                                                        string part1 = var.getContent().substr(0, stoi(firstnum)), part2 = var.getContent().substr(stoi(firstnum));
+
+                                                        result += part1 + text + part2;
+                                                        found = true;
+                                                    } catch(invalid_argument&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                        exit(-1);
+                                                    } catch(out_of_range&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                        exit(-1);
+                                                    }
+                                                } else {
+                                                    // Throw invalid_argument
+                                                    throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                    exit(-1);
+                                                }
+                                            } else {
+                                                throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+                                            }
+                                        } else if(modifiers.substr(0, 3) == "At(") {
+                                            string args = modifiers.substr(3);
+                                            args.pop_back();
+
+                                            translateString(args, line, exceptionN);
+
+                                            if(typeIn(args) == "number") {
+                                                try {
+                                                    result += var.getContent().at(stoi(args));
+                                                    found = true;
+                                                } catch(invalid_argument&) {
+                                                    // Throw invalid_argument
+                                                    throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                    exit(-1);
+                                                } catch(out_of_range&) {
+                                                    // Throw invalid_argument
+                                                    throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                    exit(-1);
+                                                }
+                                            } else {
+                                                // Throw invalid_argument
+                                                throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                exit(-1);
+                                            }
+                                        } else if(modifiers.substr(0,6) == "Split(") {
+                                            string args = modifiers.substr(6);
+                                            args.pop_back();
+
+                                            if(findFirstIndexOutsideQuotes(args, ",") != -1) {
+                                                removeSpacesOutsideQuotes(args);
+
+                                                string delimeter = splitOutsideQuotes(args, ',')[0];
+                                                string index = splitOutsideQuotes(args, ',')[1];
+
+                                                translateString(delimeter, line, exceptionN);
+                                                translateString(index, line, exceptionN);
+
+                                                if(typeIn(index) == "number") {
+                                                    try {
+                                                        result += splitStringUsingString(var.getContent(), delimeter)[stoi(index)];
+                                                        found = true;
+                                                    } catch(invalid_argument&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                        exit(-1);
+                                                    } catch(out_of_range&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                        exit(-1);
+                                                    }
+                                                } else {
+                                                    // Throw invalid_argument
+                                                    throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                    exit(-1);
+                                                }
+                                            } else {
+                                                throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+                                            }
+                                        } else if(modifiers.substr(0, 6) == "Crypt(") {
+                                            string args = modifiers.substr(6);
+                                            args.pop_back();
+
+                                            translateString(args, line, exceptionN);
+
+                                            result += encryptText(var.getContent(), args);
+                                            found = true;
+                                        } else if(modifiers.substr(0, 13) == "ReplaceIndex(") {
+                                            string args = modifiers.substr(13);
+                                            args.pop_back();
+
+                                            if(findFirstIndexOutsideQuotes(args, ",") != -1) {
+                                                removeSpacesOutsideQuotes(args);
+
+                                                string index = splitOutsideQuotes(args, ',')[0];
+                                                string match = splitOutsideQuotes(args, ',')[1];
+                                                string replaceWith = splitOutsideQuotes(args, ',')[2];
+
+                                                translateString(index, line, exceptionN);
+                                                translateString(match, line, exceptionN);
+                                                translateString(replaceWith, line, exceptionN);
+
+                                                if(typeIn(index) == "number") {
+                                                    try {
+                                                        result += replaceNthOccurrence(var.getContent(), match, replaceWith, stoi(index) + 1);
+                                                        found = true;
+                                                    } catch(invalid_argument&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                        exit(-1);
+                                                    } catch(out_of_range&) {
+                                                        // Throw invalid_argument
+                                                        throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                        exit(-1);
+                                                    }
+                                                } else {
+                                                    // Throw invalid_argument
+                                                    throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                    exit(-1);
+                                                }
+                                            } else {
+                                                throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+                                            }
+                                        } else if(modifiers.substr(0,11) == "ReplaceAll(") {
+                                            string args = modifiers.substr(11);
+                                            args.pop_back();
+
+                                            if(findFirstIndexOutsideQuotes(args, ",") != -1) {
+                                                removeSpacesOutsideQuotes(args);
+
+                                                string match = splitOutsideQuotes(args, ',')[0];
+                                                string replaceWith = splitOutsideQuotes(args, ',')[1];
+
+                                                translateString(match, line, exceptionN);
+                                                translateString(replaceWith, line, exceptionN);
+
+                                                try {
+                                                    String original = var.getContent();
+                                                    replaceAll(original, match, replaceWith);
+                                                    result += original;
+                                                    found = true;
+                                                } catch(invalid_argument&) {
+                                                    // Throw invalid_argument
+                                                    throwError("epi2.error.invalid_argument", "The type that you introduced for making a substring of a string is not a number.", exceptionN, line);
+                                                    exit(-1);
+                                                } catch(out_of_range&) {
+                                                    // Throw invalid_argument
+                                                    throwError("epi2.error.out_of_bounds", "The number that you introduced is invalid on that operation", exceptionN, line);
+                                                    exit(-1);
+                                                }
+                                            } else {
+                                                throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+                                            }
+                                        }
+                                    } catch(exception&) {}
+                                }
+                            } else {
+                                result += var.getContent();
+                                found = true;
+                            }
+                        }
+                    } else {
+                        if(call == var.getName()) {
+                            result += var.getContent();
+                            found = true;
+                        }
                     }
                 }
 
@@ -825,23 +1495,6 @@ void replaceOutsideQuotes2(std::string& input, const std::string& oldStr, const 
 
     input = result;  // Assign the modified result back to the input string
 }
-int findFirstIndexOutsideQuotes(const std::string& input, const std::string& target) {
-    bool inQuotes = false;
-    size_t inputLength = input.length();
-    size_t targetLength = target.length();
-
-    for (size_t i = 0; i <= inputLength - targetLength; ++i) {
-        if (input[i] == '"' || input[i] == '\'') {
-            inQuotes = !inQuotes;  // Toggle the inQuotes flag
-        }
-
-        if (!inQuotes && input.substr(i, targetLength) == target) {
-            return i;  // Found the target outside quotes, return the index
-        }
-    }
-
-    return -1;  // Target not found outside quotes
-}
 
 bool nameAlreadyUsed(String name) {
     for(Variable var : variables) {
@@ -868,20 +1521,19 @@ void logThings(String command, int line, bool onFunction, String functionName, i
     fileObject << result + "\n";
 }
 
-int runC(String& command, String& returnS, String& exceptionN, int& line, bool onFunction, String functionName, int line2, String runnedFunctionAs, bool onTry) {
+bool doingSwitch = false;
+bool doingCase = false;
+String switchText = "";
+
+bool skipSwitch = false;
+
+
+int compile(String& command, String& returnS, String& exceptionN, int& line) {
     if(command.empty()) { return 0; }
 
-    command = command.substr(0,command.find("\n"));
-
-    if(fullDebug) {
-        logThings(command, line, onFunction, functionName, line2, runnedFunctionAs, onTry);
-    }
-
     if(writingFunction) {
-        String s("    ");
-
-        if(command.substr(0,s.length()) == s && functionToWrite != "") {
-            command = command.substr(s.length());
+        if(command.substr(0,4) == "    " && functionToWrite != "") {
+            command = command.substr(4);
             int i = 0;
             for(const auto& vec : functions) {
                 if(vec[0] == functionToWrite) {
@@ -895,26 +1547,23 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
         } else {
             writingFunction = false;
             functionToWrite = "";
-            runC(command, returnS, exceptionN, line);
+            run(command, returnS, exceptionN, line);
         }
     } else if(writingTry) {
-        String s("    ");
-        if(command.substr(0,s.length()) == s) {
-            command = command.substr(s.length());
+        if(command.substr(0,4) == "    ") {
+            command = command.substr(4);
             tryCode = command + "\n";
             return 0;
         } else {
             writingTry = false;
             if(command.substr(0, 5) == "catch") {
                 catchCode = "";
-                size_t start = 6;
-                size_t end = command.find(":");
-                std::string errorToCatch = command.substr(start, end - start);
+                std::string errorToCatch = command.substr(6);
 
                 for(String& l : splitOutsideQuotes(tryCode, '\n')) {
                     String excepN = "";
-                    runC(l, returnS, excepN, line, onFunction, functionName, line2, runnedFunctionAs, true) ;
-                    if(excepN == errorToCatch) {
+                    run(l, returnS, excepN, line);
+                    if(excepN == errorToCatch || (errorToCatch == "*" && excepN != "")) {
                         writingCatch = true;
                         writingTry = false;
                         tryCode = "";
@@ -928,439 +1577,533 @@ int runC(String& command, String& returnS, String& exceptionN, int& line, bool o
             }
         }
     } else if(writingCatch) {
-        String s("    ");
-        
-        if(command.substr(0,s.length()) == s) {
-            command = command.substr(s.length());
+        if(command.substr(0,4) == "    ") {
+            command = command.substr(4);
             
             catchCode += command + "\n";
-            
-            cout << file << endl;
 
             try {
                 String s = splitOutsideQuotes(file, '\n')[line+1];
-            } catch(exception&) {
-                cout << "hehe boi" << endl;
-            }
+            } catch(exception&) {}
             
             return 0;
         } else {
             writingCatch = false;
             for(String s : splitOutsideQuotes(catchCode, '\n')) {
-                runC(s,returnS, exceptionN, line, onFunction);
+                run(s,returnS, exceptionN, line);
             }
             catchCode = "";
-            runC(command,returnS,exceptionN,line);
+            run(command,returnS,exceptionN,line);
             return 0;
+        }
+    } else if(doingCase) {
+        if(command.substr(0,8) == "        ") {
+            string com = command.substr(8);
+            
+            run(command, returnS, exceptionN, line);
+        } else {
+            doingCase = false;
+            skipSwitch = true;
+        }
+    } else if(doingSwitch) {
+        if(command.substr(0,4) == "    ") {
+            if(!skipSwitch) {
+                if(command.substr(4,4) == "case") {
+                    string match = command.substr(9);
+
+                    translateString(match, line, exceptionN);
+
+                    if(switchText == match) {
+                        doingCase = true;
+                        skipSwitch = true;
+                    }
+                } else if(command.substr(4) == "default") {
+                    doingCase = true;
+
+                }
+            } else {
+                return 0;
+            }
+        } else {
+            doingSwitch = false;
+            skipSwitch = false;
+            switchText = "";
+
+            run(command, returnS, exceptionN, line);
         }
     } else {
-        if(command.find('@') == std::string::npos) {
-            command = splitOutsideQuotes(command, '@')[0];
-        }
-
-        String desCommand;
-        if(command.find(' ') != 0) {
-            desCommand = command.substr(0, command.find(' '));
-        } else {
-            desCommand = command;
-        }
-        if(       desCommand == "print") {
-            // print function is for printing text into the screen
-            // @example print "Hello, " + username + "!"
-            // @since v_0.1
-            String s = command.substr(desCommand.length() + 1);
-            translateString(s, line, exceptionN);
-            cout << s << "\n";
-        } else if(desCommand == "printc") {
-            // print function is for printing text into the screen but without new line
-            // @example printc "Hello, " + username + "!"
-            // @since v_0.1
-            String s = command.substr(desCommand.length() + 1);
-            translateString(s, line, exceptionN);
-            cout << s;
-        } else if(desCommand == "cmd") {
-            // cmd function is for running a command line command
-            // @example cmd "winver"
-            // @since v_0.1
-            String s = command.substr(desCommand.length() + 1);
-            translateString(s, line, exceptionN);
-            system(s.c_str());
-        } else if(desCommand == "var") {
-            String s = command.substr(desCommand.length() + 1);
-            String name = s.substr(0, s.find_first_of(' '));
-
-            if(nameAlreadyUsed(name)) {
-                throwError("epi2.error.variables.redefinition", "That name is already used for a variable.", exceptionN, line);
-                return -1;
-            }
-
-            if(findFirstIndexOutsideQuotes(s, "=") != -1) {
-                if(s.substr(s.find_first_of(name) + 1 + name.length(), 1) == "=") {
-                    removeSpacesOutsideQuotes(s);
-                    String content = s.substr(s.find_first_of("=") + 1);
-
-                    Variable t = analyze(content, line, exceptionN);
-
-                    Variable var(t.getType(), name, t.getContent());
-                    variables.push_back(var);
-                } else {
-                    throwError("epi2.syntax.variables.definition", "Missing equal expression for definig a variable.", exceptionN, line);
-                }
-            } else {
-                if(s.substr(s.find_first_of(' ') + 1, 2) == "as") {
-                    try {
-                        String t = s.substr(s.find_last_of(' ') + 1);
-                        
-                        if(t == "string" || t == "number" || t == "boolean") {
-                            Variable var(t, name, "");
-                            variables.push_back(var);
-                        } else {
-                            throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line);
-                        }
-                    } catch(out_of_range&) {
-                        throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line);
-                    }
-                } else {
-                    throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line);
-                }
-            }
-        } else if(desCommand == "function") {
-            // function keyword is for creating a function for storing code
-            // @example function helloWorld
-            // @since v_0.1
-            String args = command.substr(desCommand.length() + 1);
-
-            if(args.back() != ':') {
-                throwError("epi2.functions.baddefinition", "A function should always be defined with code.", exceptionN, line);
-                return 1;
-            }
-
-            String name = args.substr(0, args.length() - 1);
-
-            if(!validateVariableName(name)) {
-                throwError("epi2.functions.baddeclaration", "The name you choose for the function isn't valid.", exceptionN, line);
-                return 1;
-            }
-
-            vector<String> v = {name, ""};
-            
-            writingFunction = true;
-            functionToWrite = name;
-
-            functions.push_back(v);
-
-            return 0;
-        } else if(desCommand.substr(0,1) == "$") {
-            // $ keyword is for editing a variable
-            // @example $hello "Hola"
-            // @since v_0.1
-            String varToWrite = desCommand.substr(1);
-
-            for(Variable& var : variables) {
-                if(varToWrite == var.getName()) {
-                    String content = command.substr(desCommand.length() + 1);
-                    Variable var2(analyze(content, line, exceptionN));
-                    if(var2.getType() == var.getType()) {
-                        translateString(content, line, exceptionN);
-                        var.setContent(content);
-                        return 0;
-                    } else {
-                        if(var2.getType() == "number" && var.getType() == "string") {
-                            translateString(content, line, exceptionN);
-                            var.setContent(content);
-                            return 0;    
-                        }
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + var2.getType() + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
-                        return -1;
-                    }
-                }
-            }
-            throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line);
-        } else if(command.length() >= 1 && command.substr(0,1) == "@") {
-            return 0;
-        } else if(desCommand.length() >= 1 && desCommand.substr(0,1) == "#") {
-            int i = 0;
-            line2 = 1;
-
-            for(const auto& vec : functions) {
-                if(desCommand == "#" + vec[0]) {
-                    for(String& s : splitString(vec[1], '\n')) {
-                        String exc = "", ret = "";
-                        runC(s, ret, exc, line, true, vec[0], line2, command);
-                        if(exc != "") {
-                            exceptionN = exc;
-                            return 1;
-                        } else if(ret != "") {
-                            returnS = ret;
-                            return 0;
-                        }
-                        line2++;
-                    }
-                    return 0;
-                }
-                i++;
-            }
-            throwError("epi2.error.function.unknownfunction", "That function doesn't exist.", exceptionN, line);
-            return 1;
-        } else if(desCommand == "return") {
-            if(command == "return") {
-                return 0;
-            } else {
-                try {
-                    String retText = command.substr(desCommand.length() + 1);
-                    translateString(retText, line, exceptionN);
-                    returnS = retText;
-                    return 0;
-                } catch(exception&) {
-                    return 0;
-                }
-            }
-        } else if(desCommand == "in") {
-            String s = command.substr(desCommand.length() + 1);
-
-            String r = "";
-            getline(cin, r);
-
-            for(Variable& var : variables) {
-                if(s == var.getName()) {
-                    if(typeIn(r) == var.getType()) {
-                        var.setContent(r);
-                        return 0;
-                    } else {
-                        if(typeIn(r) == "number" && typeIn(r) == "string") {
-                            translateString(r, line, exceptionN);
-                            var.setContent(r);
-                            return 0;    
-                        }
-                        
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + analyze(r, line, exceptionN).getType() + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
-                        return -1;
-                    }
-                }
-            }
-
-            // The variable doesn't exist so we create a new variable.
-            String t = typeIn(r);
-            Variable var(t, s, r);
-            variables.push_back(var);
-            return 0;
-        } else if(desCommand == "~include") {
-            String s = command.substr(desCommand.length() + 1);
-            if(s == "gui") {
-                dirGUIIncluded = true;
-            } else {
-                if(exists(s)) {
-                    fstream f(s);
-                    String lineN, exc, ret;
-                    while(getline(f, lineN)) {
-                        runC(lineN, exc, ret, line);
-                        if(exc != "") {
-                            return 1;
-                        }
-                    }
-                    f.good();
-                } else {
-                    cout << ASCII_BOLD << BRIGHT_WHITE << "[" << line << "] " << ASCII_RESET << ASCII_BOLD<< ASCII_RED << "epi2.error.lang.unknownlibrary" << ASCII_RESET << " - " << ASCII_RED << "That library doesn't exist or the file doesn't exist.\n" << ASCII_RESET;
-                    exceptionN = "epi2.error.lang.unknownlibrary";
-                    return 1;
-                }
-            }
-        } else if(desCommand == "msgbox") {
-            if(dirGUIIncluded) {
-                if(command.find(",") == std::string::npos) {
-                    String s = command.substr(desCommand.length() + 1);
-                    String t = splitOutsideQuotes(s, ',')[1];
-                    String m = splitOutsideQuotes(s, ',')[0];
-                    translateString(t, line, exceptionN);
-                    translateString(m, line, exceptionN);
-                    showDialog(m, t);
-                } else {
-                    String s = command.substr(desCommand.length() + 1);
-                    translateString(s, line, exceptionN);
-                    showDialog(s, "epi2");
-                }
-            } else {
-                cout << ASCII_BOLD << BRIGHT_WHITE << "[" << line << "] " << ASCII_RESET << ASCII_BOLD<< ASCII_RED << "epi2.error.lang.librarynotimported" << ASCII_RESET << " - " << ASCII_RED << "The library which contain the function isn't initialized.\n" << ASCII_RESET;
-                exceptionN = "epi2.error.lang.librarynotimported";
-                return 1;
-            }
-        } else if(desCommand == "inn") {
-            String s = command.substr(desCommand.length() + 1);
-
-            String r = takePasswdFromUser("");
-
-            for(Variable& var : variables) {
-                if(s == var.getName()) {
-                    if(typeIn(r) == var.getType()) {
-                        var.setContent(r);
-                        return 0;
-                    } else {
-                        if(typeIn(r) == "number" && var.getType() == "string") {
-                            translateString(r, line, exceptionN);
-                            var.setContent(r);
-                            return 0;    
-                        }
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + typeIn(r) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
-                        return -1;
-                    }
-                }
-            }
-            // The variable doesn't exist so we create a new variable.
-            String t = typeIn(r);
-            Variable var(t, s, r);
-            variables.push_back(var);
-            return 0;
-        } else if(desCommand == "inp") {
-            String s = command.substr(desCommand.length() + 1);
-            if(s.find(" ") == std::string::npos) {
-                throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
-                exceptionN = "epi2.error.lang.missingargs";
-                return 1;
-            }
-            String vName = splitOutsideQuotes(s, ' ')[0];
-            String text = splitOutsideQuotes(s, ' ')[1];
-            translateString(text, line, exceptionN);
-
-            String r = takePasswdFromUser(text);
-
-            for(Variable& var : variables) {
-                if(vName == var.getName()) {
-                    if(typeIn(r) == var.getType()) {
-                        var.setContent(r);
-                        return 0;
-                    } else {
-                        if(typeIn(r) == "number" && var.getType() == "string") {
-                            translateString(r, line, exceptionN);
-                            var.setContent(r);
-                            return 0;    
-                        }
-                        throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + typeIn(r) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
-                        return -1;
-                    }
-                }
-            }
-            // The variable doesn't exist so we create a new variable.
-            String t = typeIn(r);
-            Variable var(t, s, r);
-            variables.push_back(var);
-            return 0;
-        } else if(   command == "try:") {
-            writingTry = true;
-        } else if(desCommand == "File") {
-            String args = command.substr(desCommand.length() + 1);
-            removeSpacesOutsideQuotes(args);
-    
-            if(args.find("is") != string::npos) {
-                // The code defined a filename
-                String varName = args.substr(0, findFirstIndexOutsideQuotes(args, "is"));
-                String filename = args.substr(varName.length() + 2);
-
-                translateString(filename, line, exceptionN);
-
-                File file(varName, filename);
-
-                files.push_back(file);
-            } else {
-                // The code didn't defined a filename
-                String varName = args;
-
-                File file(varName, "");
-
-                files.push_back(file);
-            }
-        } else if(desCommand == "append") {
-            String text, varName, args = command.substr(desCommand.length() + 1);
-
-            removeSpacesOutsideQuotes(args);
-
-            text = args.substr(0, findFirstIndexOutsideQuotes(args, "to"));
-            varName = args.substr(text.length() + 2);
-            translateString(text, line, exceptionN);
-
-            for(File file : files) {
-                if(file.getName() == varName) {
-                    if(!file.isOpen()) {
-                        throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
-                        return -1;
-                    }
-
-                    file.write(file.read() + text);
-                    return 0;
-                }
-            }
-
-            throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
-            return -1;
-        } else if(desCommand == "write") {
-            String text, varName, args = command.substr(desCommand.length() + 1);
-
-            removeSpacesOutsideQuotes(args);
-
-            text = args.substr(0, findFirstIndexOutsideQuotes(args, "to"));
-            varName = args.substr(text.length() + 2);
-            translateString(text, line, exceptionN);
-
-            for(File file : files) {
-                if(file.getName() == varName) {
-                    if(!file.isOpen()) {
-                        throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
-                        return -1;
-                    }
-
-                    file.write(text);
-                    return 0;
-                }
-            }
-
-            throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
-            return -1;
-        } else if(desCommand == "open") {
-            String varName, filename, args = command.substr(desCommand.length() + 1);
-
-            removeSpacesOutsideQuotes(args);
-
-            varName = args.substr(0, findFirstIndexOutsideQuotes(args, "at"));
-            filename = args.substr(varName.length() + 2);
-
-            translateString(filename, line, exceptionN);
-
-            for(File file : files) {
-                if(file.getName() == varName) {
-                    file.open(filename);
-                    return 0;
-                }
-            }
-
-            throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
-            return -1;
-        } else if(desCommand == "delete") {
-            String varName, args = command.substr(desCommand.length() + 1);
-
-            removeSpacesOutsideQuotes(args);
-            varName = args;
-
-            for(File file : files) {
-                if(file.getName() == varName) {
-                    if(!file.isOpen()) {
-                        throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
-                        return -1;
-                    }
-
-                    file.deletef();
-                    return 0;
-                }
-            }
-
-            throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
-            return -1;
-        } else {
-            throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line);
-            exceptionN = "epi2.lang.unexpected.notacommand";
-            return 1;
-        }
+        run(command, returnS, exceptionN, line);
     }
 
     return 0;
+}
+
+bool prevLineComment = false;
+
+int run(String& command, String& returnS, string& exceptionN, int& line, int line2) {
+    while(command.substr(0,4) == "    ") {
+        command = command.substr(4);
+    }
+    if(command.find('@') == std::string::npos) {
+        command = splitOutsideQuotes(command, '@')[0];
+    }
+
+    if(prevLineComment && command.at(0) == '(') {
+        return 0;
+    }
+
+    if(command.at(0) == '@') {
+        prevLineComment = true;
+        return 0;
+    } else {
+        prevLineComment = false;
+    }
+
+    String desCommand;
+    if(command.find(' ') != 0) {
+        desCommand = command.substr(0, command.find(' '));
+    } else {
+        desCommand = command;
+    }
+    if(       desCommand == "print" || desCommand == "out") {
+        // print function is for printing text into the screen
+        // @example print "Hello, " + username + "!"
+        // @since v_0.1
+        String s = command.substr(desCommand.length() + 1);
+        translateString(s, line, exceptionN);
+        cout << s << "\n";
+    } else if(desCommand == "printc") {
+        // print function is for printing text into the screen but without new line
+        // @example printc "Hello, " + username + "!"
+        // @since v_0.1
+        String s = command.substr(desCommand.length() + 1);
+        translateString(s, line, exceptionN);
+        cout << s;
+    } else if(desCommand == "cmd") {
+        // cmd function is for running a command line command
+        // @example cmd "winver"
+        // @since v_0.1
+        String s = command.substr(desCommand.length() + 1);
+        translateString(s, line, exceptionN);
+        system(s.c_str());
+    } else if(desCommand == "var") {
+        String s = command.substr(desCommand.length() + 1);
+        String name = s.substr(0, s.find_first_of(' '));
+
+        if(nameAlreadyUsed(name)) {
+            throwError("epi2.error.variables.redefinition", "That name is already used for a variable.", exceptionN, line);
+            return -1;
+        }
+
+        if(findFirstIndexOutsideQuotes(s, "=") != -1) {
+            if(s.substr(s.find_first_of(name) + 1 + name.length(), 1) == "=") {
+                removeSpacesOutsideQuotes(s);
+                String content = s.substr(s.find_first_of("=") + 1);
+
+                Variable t = analyze(content, line, exceptionN);
+
+                Variable var(t.getType(), name, t.getContent());
+                variables.push_back(var);
+            } else {
+                throwError("epi2.syntax.variables.definition", "Missing equal expression for definig a variable.", exceptionN, line);
+            }
+        } else {
+            if(s.substr(s.find_first_of(' ') + 1, 2) == "as") {
+                try {
+                    String t = s.substr(s.find_last_of(' ') + 1);
+                    
+                    if(t == "string" || t == "number" || t == "boolean") {
+                        Variable var(t, name, "");
+                        variables.push_back(var);
+                    } else {
+                        throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line);
+                    }
+                } catch(out_of_range&) {
+                    throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line);
+                }
+            } else {
+                throwError("epi2.variables.undefinedtype", "If you define an empty variable you should put the type of the variable.", exceptionN, line);
+            }
+        }
+    } else if(desCommand == "function") {
+        // function keyword is for creating a function for storing code
+        // @example function helloWorld
+        // @since v_0.1
+        String args = command.substr(desCommand.length() + 1);
+
+        if(args.back() != ':') {
+            throwError("epi2.functions.baddefinition", "A function should always be defined with code.", exceptionN, line);
+            return 1;
+        }
+
+        String name = args.substr(0, args.length() - 1);
+
+        if(!validateVariableName(name)) {
+            throwError("epi2.functions.baddeclaration", "The name you choose for the function isn't valid.", exceptionN, line);
+            return 1;
+        }
+
+        vector<String> v = {name, ""};
+            
+        writingFunction = true;
+        functionToWrite = name;
+
+        functions.push_back(v);
+
+        return 0;
+    } else if(desCommand.substr(0,1) == "$") {
+        // $ keyword is for editing a variable
+        // @example $hello "Hola"
+        // @since v_0.1
+        String varToWrite = desCommand.substr(1);
+
+        for(Variable& var : variables) {
+            if(varToWrite == var.getName()) {
+                String content = command.substr(desCommand.length() + 1);
+                Variable var2(analyze(content, line, exceptionN));
+                if(var2.getType() == var.getType()) {
+                    translateString(content, line, exceptionN);
+                    var.setContent(content);
+                    return 0;
+                } else {
+                    if(var2.getType() == "number" && var.getType() == "string") {
+                        translateString(content, line, exceptionN);
+                        var.setContent(content);
+                        return 0;    
+                    }
+                    throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + var2.getType() + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
+                    return -1;
+                }
+            }
+        }
+        throwError("epi2.variables.unknownvariable", "That variable doesn't exist", exceptionN, line);
+    } else if(command.length() >= 1 && command.substr(0,1) == "@") {
+        return 0;
+    } else if(desCommand.length() >= 1 && desCommand.substr(0,1) == "#") {
+        int i = 0;
+        line2 = 1;
+
+        for(const auto& vec : functions) {
+            if(desCommand == "#" + vec[0]) {
+                for(String& s : splitString(vec[1], '\n')) {
+                    String exc = "", ret = "";
+                    compile(s, ret, exc, line);
+                    if(exc != "") {
+                        exceptionN = exc;
+                        return 1;
+                    } else if(ret != "") {
+                        returnS = ret;
+                        return 0;
+                    }
+                    line2++;
+                }
+                return 0;
+            }
+            i++;
+        }
+        throwError("epi2.error.function.unknownfunction", "That function doesn't exist.", exceptionN, line);
+        return 1;
+    } else if(desCommand == "return") {
+        if(command == "return") {
+            return 0;
+        } else {
+            try {
+                String retText = command.substr(desCommand.length() + 1);
+                translateString(retText, line, exceptionN);
+                returnS = retText;
+                return 0;
+            } catch(exception&) {
+                return 0;
+            }
+        }
+    } else if(desCommand == "in") {
+        String s = command.substr(desCommand.length() + 1);
+
+        String r = "";
+        getline(cin, r);
+
+        for(Variable& var : variables) {
+            if(s == var.getName()) {
+                if(typeIn(r) == var.getType()) {
+                    var.setContent(r);
+                    return 0;
+                } else {
+                    if(typeIn(r) == "number" && typeIn(r) == "string") {
+                        var.setContent(r);
+                        return 0;    
+                    }
+                        
+                    throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + analyze(r, line, exceptionN).getType() + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
+                    return -1;
+                }
+            }
+        }
+
+        // The variable doesn't exist so we create a new variable.
+        String t = typeIn(r);
+        Variable var(t, s, r);
+        variables.push_back(var);
+        return 0;
+    } else if(desCommand == "~include") {
+        String s = command.substr(desCommand.length() + 1);
+        if(s == "gui") {
+            dirGUIIncluded = true;
+        } else {
+            if(exists(s)) {
+                fstream f(s);
+                String lineN, exc, ret;
+                while(getline(f, lineN)) {
+                    compile(lineN, exc, ret, line);
+                    if(exc != "") {
+                        return 1;
+                    }
+                }
+                f.good();
+            } else {
+                cout << ASCII_BOLD << BRIGHT_WHITE << "[" << line << "] " << ASCII_RESET << ASCII_BOLD<< ASCII_RED << "epi2.error.lang.unknownlibrary" << ASCII_RESET << " - " << ASCII_RED << "That library doesn't exist or the file doesn't exist.\n" << ASCII_RESET;
+                exceptionN = "epi2.error.lang.unknownlibrary";
+                return 1;
+            }
+        }
+    } else if(desCommand == "msgbox") {
+        if(dirGUIIncluded) {
+            if(command.find(",") == std::string::npos) {
+                String s = command.substr(desCommand.length() + 1);
+                String t = splitOutsideQuotes(s, ',')[1];
+                String m = splitOutsideQuotes(s, ',')[0];
+                translateString(t, line, exceptionN);
+                translateString(m, line, exceptionN);
+                showDialog(m, t);
+            } else {
+                String s = command.substr(desCommand.length() + 1);
+                translateString(s, line, exceptionN);
+                showDialog(s, "epi2");
+            }
+        } else {
+            cout << ASCII_BOLD << BRIGHT_WHITE << "[" << line << "] " << ASCII_RESET << ASCII_BOLD<< ASCII_RED << "epi2.error.lang.librarynotimported" << ASCII_RESET << " - " << ASCII_RED << "The library which contain the function isn't initialized.\n" << ASCII_RESET;
+            exceptionN = "epi2.error.lang.librarynotimported";
+            return 1;
+        }
+    } else if(desCommand == "inn") {
+        String s = command.substr(desCommand.length() + 1);
+
+        String r = takePasswdFromUser("");
+
+        for(Variable& var : variables) {
+            if(s == var.getName()) {
+                if(typeIn(r) == var.getType()) {
+                    var.setContent(r);
+                    return 0;
+                } else {
+                    if(typeIn(r) == "number" && var.getType() == "string") {
+                        translateString(r, line, exceptionN);
+                        var.setContent(r);
+                        return 0;    
+                    }
+                    throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + typeIn(r) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
+                    return -1;
+                }
+            }
+        }
+        // The variable doesn't exist so we create a new variable.
+        String t = typeIn(r);
+        Variable var(t, s, r);
+        variables.push_back(var);
+        return 0;
+    } else if(desCommand == "inp") {
+        String s = command.substr(desCommand.length() + 1);
+        if(s.find(" ") == std::string::npos) {
+            throwError("epi2.error.lang.missingargs", "Some arguments are missing.", exceptionN, line);
+            exceptionN = "epi2.error.lang.missingargs";
+            return 1;
+        }
+        String vName = splitOutsideQuotes(s, ' ')[0];
+        String text = splitOutsideQuotes(s, ' ')[1];
+        translateString(text, line, exceptionN);
+
+        String r = takePasswdFromUser(text);
+
+        for(Variable& var : variables) {
+            if(vName == var.getName()) {
+                if(typeIn(r) == var.getType()) {
+                    var.setContent(r);
+                    return 0;
+                } else {
+                    if(typeIn(r) == "number" && var.getType() == "string") {
+                        translateString(r, line, exceptionN);
+                        var.setContent(r);
+                        return 0;    
+                    }
+                    throwError("epi2.error.invalid_argument", "The type that you introduced for updating the variable (" + typeIn(r) + ") can't be used for updating a variable with type (" + var.getType() + ")", exceptionN, line);
+                    return -1;
+                }
+            }
+        }
+        // The variable doesn't exist so we create a new variable.
+        String t = typeIn(r);
+        Variable var(t, s, r);
+        variables.push_back(var);
+        return 0;
+    } else if(   command == "try") {
+        writingTry = true;
+    } else if(desCommand == "File") {
+        String args = command.substr(desCommand.length() + 1);
+        removeSpacesOutsideQuotes(args);
+    
+        if(args.find("is") != string::npos) {
+            // The code defined a filename
+            String varName = args.substr(0, findFirstIndexOutsideQuotes(args, "is"));
+            String filename = args.substr(varName.length() + 2);
+
+            translateString(filename, line, exceptionN);
+
+            File file(varName, filename);
+
+            files.push_back(file);
+        } else {
+            // The code didn't defined a filename
+            String varName = args;
+
+            File file(varName, "");
+
+            files.push_back(file);
+        }
+    } else if(desCommand == "append") {
+        String text, varName, args = command.substr(desCommand.length() + 1);
+
+        removeSpacesOutsideQuotes(args);
+
+        text = args.substr(0, findFirstIndexOutsideQuotes(args, "to"));
+        varName = args.substr(text.length() + 2);
+        translateString(text, line, exceptionN);
+
+        for(File file : files) {
+            if(file.getName() == varName) {
+                if(!file.isOpen()) {
+                    throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
+                    return -1;
+                }
+
+                file.write(file.read() + text);
+                return 0;
+            }
+        }
+
+        throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
+        return -1;
+    } else if(desCommand == "write") {
+        String text, varName, args = command.substr(desCommand.length() + 1);
+
+        removeSpacesOutsideQuotes(args);
+
+        text = args.substr(0, findFirstIndexOutsideQuotes(args, "to"));
+        varName = args.substr(text.length() + 2);
+        translateString(text, line, exceptionN);
+
+        for(File file : files) {
+            if(file.getName() == varName) {
+                if(!file.isOpen()) {
+                    throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
+                    return -1;
+                }
+
+                file.write(text);
+                return 0;
+            }
+        }
+
+        throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
+        return -1;
+    } else if(desCommand == "open") {
+        String varName, filename, args = command.substr(desCommand.length() + 1);
+
+        removeSpacesOutsideQuotes(args);
+
+        varName = args.substr(0, findFirstIndexOutsideQuotes(args, "at"));
+        filename = args.substr(varName.length() + 2);
+
+        translateString(filename, line, exceptionN);
+
+        for(File file : files) {
+            if(file.getName() == varName) {
+                file.open(filename);
+                return 0;
+            }
+        }
+
+        throwError("epi2.lang.fileundefined", "The file isn't defined.", exceptionN, line);
+        return -1;
+    } else if(desCommand == "delete") {
+        String varName, args = command.substr(desCommand.length() + 1);
+
+        removeSpacesOutsideQuotes(args);
+        varName = args;
+
+        for(File file : files) {
+            if(file.getName() == varName) {
+                if(!file.isOpen()) {
+                    throwError("epi2.file.notopen", "The file isn't opened, you should define the file to write before writing it.", exceptionN, line);
+                    return -1;
+                }
+
+                file.deletef();
+                return 0;
+            }
+        }
+        for(Variable& var : variables) {
+            if(var.getType() == "string" && var.getName() == varName) {
+                var.getContent().clear();
+                return 0;
+            }
+        }
+
+        throwError("epi2.lang.variable undefined", "The variable isn't defined.", exceptionN, line);
+        return -1;
+    } else if(desCommand == "switch") {
+        String args = command.substr(7);
+        translateString(args, line, exceptionN);
+        switchText = args;
+        doingSwitch = true;
+    } else {
+        removeSpacesOutsideQuotes(command);
+
+        try {
+            for(Variable& var : variables) {
+                if(command.substr(0, var.getName().length() + 1) == var.getName() + "=") {
+                    String newtext = splitString(command, '=')[1];
+
+                    translateString(newtext, line, exceptionN);
+
+                    var.setContent(newtext);
+                    return 0;
+                }
+
+
+                if(var.getType() == "number" && command == var.getName() + "++") {
+                    var.setContent(to_string(stoi(var.getContent()) + 1));
+                    return 0;
+                } else if(var.getType() == "number" && command == var.getName() + "--") {
+                    var.setContent(to_string(stoi(var.getContent()) - 1));
+                    return 0;
+                } else if(var.getType() == "number" && command == var.getName() + "**") {
+                    var.setContent(to_string(stoi(var.getContent()) * stoi(var.getContent())));
+                    return 0;
+                } else if(var.getType() == "number" && command.substr(0,var.getName().length() + 2) == var.getName() + "+=") {
+                    String args = command.substr(var.getName().length() + 2);
+
+                    translateString(args, line, exceptionN);
+
+                    var.setContent(to_string(stoi(var.getContent()) + stoi(args)));
+                    return 0;
+                }
+            }
+        } catch(exception&) {}
+
+        throwError("epi2.lang.unexpected.notacommand", "I think the command is wrong.", exceptionN, line);
+        exceptionN = "epi2.lang.unexpected.notacommand";
+        return 1;
+    }
+    return 1;
 }
 
 void processFile(const std::string& s) {
@@ -1382,9 +2125,11 @@ void processFile(const std::string& s) {
         file += temp + "\n";
     }
 
+    f.close();
+
     // Process lines after reading
     for (String& line : lines) {
-        runC(line, ret, exc, li);
+        compile(line, ret, exc, li);
         li++;
     }
 }
@@ -1478,13 +2223,13 @@ int main(int argc, char** argv) {
             } else if(command == "version") {
                 cout << "epi" << (char) 253 << " v_0.202\n";
                 cout << "This program is open-source software licensed with GNU GPL v3.\n";
-                cout << "Run \"epi --show-license\" for reading it.\n";
+                cout << "Run \"epi --show-license\" for reading the license.\n";
                 cout << "You can modify this code BUT the name of the new program should contain the \"" << (char) 253 << "\" symbol.\n";
             } else {
                 String returnS;
                 String exceptionN;
                 int l = 0;
-                runC(command, returnS, exceptionN, l);
+                run(command, returnS, exceptionN, l);
                 if(!returnS.empty()) {
                     cout << ASCII_BOLD << BRIGHT_WHITE << " << " << ASCII_RESET << returnS << "\n";
                 }

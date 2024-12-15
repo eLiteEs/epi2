@@ -1,0 +1,12 @@
+printc "Enter username: "
+in username
+
+@ This code doesn't look good
+( It's strange to use a switch instead of a if
+( I'm trying to work on it
+
+switch username.Equals("admin")
+    case true
+        print "Hello Admin!"
+    default
+        print "Unknounw username"
