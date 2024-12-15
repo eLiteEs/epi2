@@ -2,5 +2,14 @@
     {
         "name": "How to install epi²",
         "source": "how-to-install-epi2.md"
+    },
+    {
+        "name": "Compiling files",
+        "source": "compiling-files.md"
+    },
+    {
+        "name": "Output and Input text in the Console",
+        "source": "output-and-input.md"
     }
+    
 ]
