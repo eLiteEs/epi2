@@ -1,25 +1,42 @@
 [
     {
+        "type": "item",
         "name": "How to install epi²",
         "source": "how-to-install-epi2.md"
     },
     {
+        "type": "item",
         "name": "Compiling files",
         "source": "compiling-files.md"
     },
     {
+        "type": "item",
         "name": "Output and Input text in the Console",
         "source": "output-and-input.md"
     },
     {
+        "type": "dropdown",
+        "name": "Variables",
+        "content": [
+            {
+                "type": "item",
+                "name": "Strings",
+                "source": "variables.md"
+            }
+        ]
+    },
+    {
+        "type": "item",
         "name": "Variables",
         "source": "variables.md"
     },
     {
+        "type": "item",
         "name": "Functions and Return",
         "source": "functions.md"
     },
     {
+        "type": "item",
         "name": "Variable Functions",
         "source": "variable-functions.md"
     }
