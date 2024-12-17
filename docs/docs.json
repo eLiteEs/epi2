@@ -19,9 +19,15 @@
         "name": "Variables",
         "content": [
             {
-                "type": "item",
+                "type": "dropdown",
                 "name": "Strings",
-                "source": "variables.md"
+                "content": [
+                    {
+                        "type": "item",
+                        "name": "Creating a String",
+                        "source": "strings/creating-a-string.md"
+                    }
+                ]
             }
         ]
     },
