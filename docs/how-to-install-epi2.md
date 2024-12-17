@@ -1,4 +1,3 @@
-# How to install epi²
 ## On Windows
 ### Using `dlib`
 `dlib` is a package installer for Windows made by eLite. You can use this for installing epi² on your computer.

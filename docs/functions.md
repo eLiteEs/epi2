@@ -1,4 +1,3 @@
-# Functions and Return
 You can store runeable code inside a function for writing a lot of code faster, without repeating lines of code.
 Example:
 ```

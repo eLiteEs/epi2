@@ -1,4 +1,3 @@
-# Compiling files
 For compiling files on epi², you should run `epi2 filename.epi2`.
 
 You can use debugging tools to it using `--debug-v` or `--f-debug` like this: `epi2 program.epi2 --debug-v`.

@@ -1,4 +1,3 @@
-# Variable Functions
 This are functions that are useful for working with variables.
 There are 2 types of Variable Functions.
 1. **Multi-Type functions**, works with any type of variables. Examples: `Type`, `Equals`, etc...

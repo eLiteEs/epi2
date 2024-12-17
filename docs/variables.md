@@ -1,4 +1,3 @@
-# Variables
 You can use variables for storing text, numbers or a boolean.
 
 You can define a variable by two ways.

@@ -1,5 +1,3 @@
-# Output and Input text in the Console
-
 ## Output Text
 
 For showing text into the console, you can use `print` or `out` functions. Example:
