@@ -35,7 +35,7 @@
   <Fragment>
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="EPI2Association" Guid="f23e451a-6c1b-4ea3-8745-9af8cdded6c9">
-        <ProgId Id="EPI2File" Description="Archivo EPI2" Icon="../icon.ico">
+        <ProgId Id="EPI2File" Description="Archivo EPI2" Icon="icon.ico">
           <Extension Id="epi2" ContentType="application/epi2">
             <Verb Id="open" Command="Open" Argument="&quot;%1&quot;" TargetFile="epi2.exe" />
           </Extension>
