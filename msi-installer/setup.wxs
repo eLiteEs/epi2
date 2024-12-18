@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="epi2" Language="1033" Version="1.0.0.0" Manufacturer="eLite"
+           UpgradeCode="28bed4c1-113c-4752-92f3-13247d02c923">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <MediaTemplate />
+
+    <Feature Id="ProductFeature" Title="epi2" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+
+    <!-- Asociar archivos .epi2 -->
+    <Property Id="EPI2File" Value="[INSTALLFOLDER]TuPrograma.exe" />
+    <ProgId Id="EPI2File" Description="Archivo EPI2">
+      <Extension Id="epi2" ContentType="application/epi2">
+        <Verb Id="open" Command="open" Argument="&quot;%1&quot;" />
+      </Extension>
+    </ProgId>
+
+    <!-- Añadir a PATH -->
+    <DirectoryRef Id="TARGETDIR">
+      <Component Id="SetPath" Guid="28bed4c1-113c-4752-92f3-13247d02c923">
+        <Environment Id="SetPathVariable" Name="Path" Action="set" Part="last" Value="[INSTALLFOLDER]" Permanent="yes" />
+      </Component>
+    </DirectoryRef>
+  </Product>
+  
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="epi2" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="MainExecutable" Guid="28bed4c1-113c-4752-92f3-13247d02c923">
+        <File Source="epi2.exe" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

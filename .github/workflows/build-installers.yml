@@ -1,0 +1,36 @@
+name: Build Installers
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-msi-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    
+    - name: Compile for Windows
+      run: |
+        g++ src/epi.cpp -o epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
+
+    - name: Install WiX Toolset
+      run: |
+        curl -Lo wix.zip https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311-binaries.zip
+        Expand-Archive -Path wix.zip -DestinationPath wix
+        setx PATH "%PATH%;%CD%\\wix"
+    
+    - name: Build MSI Installer
+      run: |
+        wix\candle.exe setup.wxs
+        wix\light.exe setup.wixobj -out setup.msi
+      
+    
+    - name: Upload executables
+      uses: actions/upload-artifact@v4
+      with:
+        name: win_x64_setup_epi2
+        path: |
+          setup.msi
