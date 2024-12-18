@@ -10,24 +10,11 @@
 
     <Feature Id="ProductFeature" Title="epi2" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="EPI2Association" />
+      <ComponentRef Id="SetPath" />
     </Feature>
-
-    <!-- Asociar archivos .epi2 -->
-    <Property Id="EPI2File" Value="[INSTALLFOLDER]TuPrograma.exe" />
-    <ProgId Id="EPI2File" Description="Archivo EPI2">
-      <Extension Id="epi2" ContentType="application/epi2">
-        <Verb Id="open" Command="open" Argument="&quot;%1&quot;" />
-      </Extension>
-    </ProgId>
-
-    <!-- Añadir a PATH -->
-    <DirectoryRef Id="TARGETDIR">
-      <Component Id="SetPath" Guid="28bed4c1-113c-4752-92f3-13247d02c923">
-        <Environment Id="SetPathVariable" Name="Path" Action="set" Part="last" Value="[INSTALLFOLDER]" Permanent="yes" />
-      </Component>
-    </DirectoryRef>
   </Product>
-  
+
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
@@ -38,9 +25,32 @@
 
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-      <Component Id="MainExecutable" Guid="28bed4c1-113c-4752-92f3-13247d02c923">
+      <Component Id="MainExecutable" Guid="e9c334e5-4e4a-4e4d-931d-8f9c0f964d31">
         <File Source="epi2.exe" KeyPath="yes" />
       </Component>
     </ComponentGroup>
+  </Fragment>
+
+  <!-- Asociar archivos .epi2 -->
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="EPI2Association" Guid="f23e451a-6c1b-4ea3-8745-9af8cdded6c9">
+        <ProgId Id="EPI2File" Description="Archivo EPI2" Icon="icon.ico">
+          <Extension Id="epi2" ContentType="application/epi2">
+            <Verb Id="open" Command="Open" Argument="&quot;%1&quot;" />
+          </Extension>
+        </ProgId>
+        <RegistryValue Root="HKCR" Key=".epi2" Value="EPI2File" Type="string" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+  <!-- Añadir a PATH -->
+  <Fragment>
+    <DirectoryRef Id="TARGETDIR">
+      <Component Id="SetPath" Guid="fd1fcb9d-bc82-4cb9-b97e-e4f6c8d6b5e5">
+        <Environment Id="SetPathVariable" Name="Path" Action="set" Part="last" Value="[INSTALLFOLDER]" Permanent="yes" />
+      </Component>
+    </DirectoryRef>
   </Fragment>
 </Wix>
