@@ -29,12 +29,8 @@ jobs:
 
     - name: Analyze C++ on Linux
       run: |
-        # Update apt-get
-        apt-get update
-
-        # Install required libraries
-        sudo apt install libncurses5-dev libncursesw5-dev
-        sudo apt install libcurl4-openssl-dev
+        # Update apt-get and install required libraries
+        sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
         
         # Create output folder
         mkdir linux-target
