@@ -24,7 +24,7 @@ jobs:
     
     - name: Build MSI Installer
       run: |
-        wix\candle.exe setup.wxs
+        wix\candle.exe .\msi-installer\setup.wxs
         wix\light.exe setup.wixobj -out setup.msi
       
     
