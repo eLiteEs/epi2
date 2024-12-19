@@ -24,7 +24,7 @@ jobs:
       run: |
         mkdir target
 
-        g++ src/epi.cpp icon.o -o target/epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
+        g++ src/epi.cpp icon/icon.o -o target/epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
 
     - name: Install WiX Toolset
       run: |
