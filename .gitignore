@@ -38,3 +38,5 @@ lib
 *.log
 target
 target
+wix
+wix.zip

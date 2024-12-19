@@ -9,10 +9,7 @@
     <MediaTemplate />
 
     <Feature Id="ProductFeature" Title="epi2" Level="1">
-      <ComponentGroupRef Id="ProductComponents" />
       <ComponentRef Id="EPI2Association" />
-      <ComponentRef Id="SetPath" />
-      <ComponentRef Id="IconComponent" />
     </Feature>
   </Product>
 
@@ -25,39 +22,18 @@
   </Fragment>
 
   <Fragment>
-    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-      <Component Id="MainExecutable" Guid="e9c334e5-4e4a-4e4d-931d-8f9c0f964d31">
-        <File Source="epi2.exe" KeyPath="yes" />
-      </Component>
-    </ComponentGroup>
-  </Fragment>
+    <Component Id="EPI2Association" Guid="f23e451a-6c1b-4ea3-8745-9af8cdded6c9" Directory="INSTALLFOLDER">
+      <File Id="epi2.exe" Source="target/epi2.exe" KeyPath="yes" />
+      <File Id="icon.ico" Source="icon.ico" />
 
-  <Fragment>
-    <DirectoryRef Id="INSTALLFOLDER">
-      <Component Id="EPI2Association" Guid="f23e451a-6c1b-4ea3-8745-9af8cdded6c9">
-        <ProgId Id="EPI2File" Description="Archivo EPI2" Icon="icon.ico">
-          <Extension Id="epi2" ContentType="application/epi2">
-            <Verb Id="open" Command="Open" Argument="&quot;%1&quot;" TargetFile="epi2.exe" />
-          </Extension>
-        </ProgId>
-        <RegistryValue Root="HKCR" Key=".epi2" Value="EPI2File" Type="string" />
-      </Component>
-    </DirectoryRef>
-  </Fragment>
+      <ProgId Id="EPI2File" Description="Archivo EPI2" Icon="icon.ico">
+        <Extension Id="epi2" ContentType="application/epi2">
+          <Verb Id="open" Command="Open" Argument="&quot;%1&quot;" TargetFile="epi2.exe" />
+        </Extension>
+      </ProgId>
+      <RegistryValue Id="EPI2AssociationRegistry" Root="HKCR" Key=".epi2" Value="EPI2File" Type="string" />
 
-  <Fragment>
-    <DirectoryRef Id="TARGETDIR">
-      <Component Id="SetPath" Guid="fd1fcb9d-bc82-4cb9-b97e-e4f6c8d6b5e5">
-        <Environment Id="SetPathVariable" Name="Path" Action="set" Part="last" Value="[INSTALLFOLDER]" Permanent="yes" />
-      </Component>
-    </DirectoryRef>
-  </Fragment>
-
-  <Fragment>
-    <DirectoryRef Id="INSTALLFOLDER">
-      <Component Id="IconComponent" Guid="d9e1b30c-4f2d-4b19-9449-d1d7b80e7552">
-        <File Id="icon.ico" Source="icon.ico" KeyPath="yes" />
-      </Component>
-    </DirectoryRef>
+      <Environment Id="SetPathVariable" Name="Path" Action="set" Part="last" Value="[INSTALLFOLDER]" Permanent="yes" />
+    </Component>
   </Fragment>
 </Wix>

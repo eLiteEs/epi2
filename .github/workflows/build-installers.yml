@@ -11,10 +11,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install MinGW
+      run: |
+        choco install mingw -y
+        echo "::add-path::C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin"
+
+    - name: Compile resource file
+      run: |
+        windres icon.rc -o icon.o
     
     - name: Compile for Windows
       run: |
-        g++ src/epi.cpp -o epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
+        mkdir target
+
+        g++ src/epi.cpp icon.o -o target/epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
 
     - name: Install WiX Toolset
       run: |
