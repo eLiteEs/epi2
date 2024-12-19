@@ -12,6 +12,7 @@
       <ComponentGroupRef Id="ProductComponents" />
       <ComponentRef Id="EPI2Association" />
       <ComponentRef Id="SetPath" />
+      <ComponentRef Id="IconComponent" />
     </Feature>
   </Product>
 
@@ -31,7 +32,6 @@
     </ComponentGroup>
   </Fragment>
 
-  <!-- Asociar archivos .epi2 -->
   <Fragment>
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="EPI2Association" Guid="f23e451a-6c1b-4ea3-8745-9af8cdded6c9">
@@ -45,11 +45,18 @@
     </DirectoryRef>
   </Fragment>
 
-  <!-- Añadir a PATH -->
   <Fragment>
     <DirectoryRef Id="TARGETDIR">
       <Component Id="SetPath" Guid="fd1fcb9d-bc82-4cb9-b97e-e4f6c8d6b5e5">
         <Environment Id="SetPathVariable" Name="Path" Action="set" Part="last" Value="[INSTALLFOLDER]" Permanent="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="IconComponent" Guid="d9e1b30c-4f2d-4b19-9449-d1d7b80e7552">
+        <File Id="icon.ico" Source="icon.ico" KeyPath="yes" />
       </Component>
     </DirectoryRef>
   </Fragment>
