@@ -31,6 +31,11 @@
                         "type": "item",
                         "name": "String Functions",
                         "source": "strings/string-functions.md"
+                    },
+                    {
+                        "type": "item",
+                        "name": "String Operators",
+                        "source": "strings/string-operators.md"
                     }
                 ]
             }
@@ -38,17 +43,7 @@
     },
     {
         "type": "item",
-        "name": "Variables",
-        "source": "variables.md"
-    },
-    {
-        "type": "item",
         "name": "Functions and Return",
         "source": "functions.md"
-    },
-    {
-        "type": "item",
-        "name": "Variable Functions",
-        "source": "variable-functions.md"
     }
 ]
