@@ -20,10 +20,9 @@ jobs:
     
     - name: Compile for Windows
       run: |
-        g++ src/epi.cpp icon/icon.o -o epi2.exe -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
-
+        g++ src/epi.cpp -o epi2.exe icon/icon.o -static -lwinmm -lole32 -lgdi32 -lwinspool -lwlanapi -lWs2_32 -lwininet -lwinhttp -liphlpapi -lurlmon -lcomctl32 
     
-    - name: Upload executables
+    - name: Upload executable
       uses: actions/upload-artifact@v4
       with:
         name: windows-executable
@@ -46,7 +45,7 @@ jobs:
           mkdir linux-target
           
           # Comile program using g++
-          g++ src/epi.cpp icon/icon.o -o linux-target/epi2 -lncurses -lcurl
+          g++ src/epi.cpp -o linux-target/epi2 icon/icon.o -lncurses -lcurl
 
       - name: Upload executables
         uses: actions/upload-artifact@v4
