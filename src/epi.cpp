@@ -2079,6 +2079,15 @@ int run(String& command, String& returnS, string& exceptionN, int& line, int lin
                 }
 
 
+		        if(var.getType() == "string" && command.substr(0, var.getName().length() + 2) == var.getName() + "+=") {
+		            String args = command.substr(var.getName().length() + 2);
+
+                    translateString(args, line, exceptionN);
+
+                    var.setContent(var.getContent() + args);
+                    return 0;
+		        }
+
                 if(var.getType() == "number" && command == var.getName() + "++") {
                     var.setContent(to_string(stoi(var.getContent()) + 1));
                     return 0;
