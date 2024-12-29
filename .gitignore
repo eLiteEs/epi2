@@ -39,3 +39,7 @@ target
 target
 wix
 wix.zip
+
+.*
+
+*~

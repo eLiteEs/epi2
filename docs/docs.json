@@ -38,6 +38,22 @@
                         "source": "strings/string-operators.md"
                     }
                 ]
+            },
+            {
+                "type": "dropdown",
+                "name": "Numbers",
+                "content": [
+                    {
+                        "type": "item",
+                        "content": "Creating a Number",
+                        "source": "numbers/creating-a-number.md"
+                    },
+                    {
+                        "type": "item",
+                        "content": "Number operators",
+                        "source": "numbers/number-operators.md"
+                    }
+                ]
             }
         ]
     },
