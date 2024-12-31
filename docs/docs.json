@@ -66,5 +66,15 @@
         "type":"item",
         "name":"Comments",
         "source": "comments.md"
+    },
+    {
+        "type": "item",
+        "name": "Message Boxes",
+        "source": "message-boxes.md"
+    },
+    {
+        "type":"item",
+        "name":"File Working",
+        "source":"file-working.md"
     }
 ]
