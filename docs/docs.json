@@ -76,5 +76,20 @@
         "type":"item",
         "name":"File Working",
         "source":"file-working.md"
+    },
+    {
+        "type":"item",
+        "name":"Run Commands",
+        "source":"cmd.md"
+    },
+    {
+        "type":"item",
+        "name":"Reserved Keywords",
+        "source":"reserved-keywords.md"
+    },
+    {
+        "type":"item",
+        "name":"Include",
+        "source":"include.md"
     }
 ]
