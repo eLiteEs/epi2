@@ -1,9 +1,4 @@
 ## On Windows
-### Using `dlib`
-`dlib` is a package installer for Windows made by eLite. You can use this for installing epi² on your computer.
-
-Setup `dlib` and run on your terminal `dlib elite-epi2`. That should download the executable of epi² on `C:\Users\username\epi2-installation\` folder.
-
 ### Downlaoding the installer from the web
 You can download a installer for Windows on the epi² web. You can decide between .msi or .exe installer. Those installers are only for Windows machines with 64 bit processors.
 

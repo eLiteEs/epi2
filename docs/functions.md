@@ -28,4 +28,4 @@ function HelloUser:
 
 print #HelloUser
 ```
-The function is being runned on the `print` function, soy the `print` function will print the text that `HelloUser` function returns.
+The function is being runned on the `print` function, so the `print` function will print the text that `HelloUser` function returns.

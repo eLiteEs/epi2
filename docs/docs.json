@@ -61,5 +61,10 @@
         "type": "item",
         "name": "Functions and Return",
         "source": "functions.md"
+    },
+    {
+        "type":"item",
+        "name":"Comments",
+        "source": "comments.md"
     }
 ]
