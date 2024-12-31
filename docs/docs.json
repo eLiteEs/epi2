@@ -45,12 +45,12 @@
                 "content": [
                     {
                         "type": "item",
-                        "content": "Creating a Number",
+                        "name": "Creating a Number",
                         "source": "numbers/creating-a-number.md"
                     },
                     {
                         "type": "item",
-                        "content": "Number operators",
+                        "name": "Number operators",
                         "source": "numbers/number-operators.md"
                     }
                 ]
