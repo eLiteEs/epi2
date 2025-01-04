@@ -79,6 +79,11 @@
     },
     {
         "type":"item",
+        "name":"Try and Catch",
+        "source":"try-catch.md"
+    },
+    {
+        "type":"item",
         "name":"Run Commands",
         "source":"cmd.md"
     },

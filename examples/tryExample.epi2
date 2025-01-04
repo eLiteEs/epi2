@@ -1,5 +1,11 @@
 var num as number
+
+print "ei"
+
 try
-    $num "Some string"
+    print "Enter a number: "
+    in num
+    print "You inserted: " + num
 catch epi2.error.invalid_argument
-    print "Error Catched"
+    @ The user didn't introduced a numebr
+    print "That's not a number."
