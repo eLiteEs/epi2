@@ -84,6 +84,11 @@
     },
     {
         "type":"item",
+        "name":"Switch",
+        "source":"switch.md"
+    },
+    {
+        "type":"item",
         "name":"Run Commands",
         "source":"cmd.md"
     },
