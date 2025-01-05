@@ -1,4 +1,4 @@
-// epi² v_0.202
+// epi² v_0.203
 // @author Blas Fernández
 // @date 31-07-24
 // @brief Nice programming language
@@ -2146,7 +2146,7 @@ void processFile(const std::string& s) {
 // Main
 int main(int argc, char** argv) {
     if(isStrOnCharArr("--version", argv, argc)) {
-        cout << "epi" << (char) 253 << " v_0.202\n";
+        cout << "epi" << (char) 253 << " v_0.203\n";
         cout << "This program is open-source software licensed with GNU GPL v3.\n";
         cout << "Run \"epi --show-license\" for reading it.\n";
         cout << "You can modify this code BUT the name of the new program should contain the \"" << (char) 253 << "\" symbol.\n";
@@ -2218,7 +2218,7 @@ int main(int argc, char** argv) {
         }
     } else {
         system("title epi2");
-        cout << ASCII_BG_GREEN << ASCII_BLACK << ASCII_BOLD << " * " << ASCII_RESET << " epi" << (char) 253 << " v_0.202\nEnter any epi" << (char) 253 << " command or enter \"help\" for get a list of commands.\n";
+        cout << ASCII_BG_GREEN << ASCII_BLACK << ASCII_BOLD << " * " << ASCII_RESET << " epi" << (char) 253 << " v_0.203\nEnter any epi" << (char) 253 << " command or enter \"help\" for get a list of commands.\n";
         String command = "";
         while (command != "exit()") {
             cout << " " << ASCII_BOLD << BRIGHT_WHITE << ">> " << ASCII_RESET;
@@ -2230,7 +2230,7 @@ int main(int argc, char** argv) {
                 cout << "- \"exit()\" Exit\n";
                 cout << "Go to " << ASCII_UNDERLINE << ASCII_BOLD << ASCII_CYAN << "https://e--epi.web.app/docs/" << ASCII_RESET << " for getting a full list of epi commands.\n";
             } else if(command == "version") {
-                cout << "epi" << (char) 253 << " v_0.202\n";
+                cout << "epi" << (char) 253 << " v_0.203\n";
                 cout << "This program is open-source software licensed with GNU GPL v3.\n";
                 cout << "Run \"epi --show-license\" for reading the license.\n";
                 cout << "You can modify this code BUT the name of the new program should contain the \"" << (char) 253 << "\" symbol.\n";
