@@ -1,5 +1,3 @@
-// I DON'T KNOW WHY THIS FILES APPEARS ON THE GITHUB PAGE, IT'S CODE. IF YOU FOUND THIS IGNORE IT.
-
 // This file contains the license on formatted text for it not filling up epi.cpp file. :)
 
 const char *license = R""""(

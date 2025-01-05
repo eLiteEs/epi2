@@ -29,6 +29,8 @@
     #include <unistd.h>
 #endif
 
+#include "utils/colors.cpp"
+
 using namespace std;
 
 const std::string ASCII_GREEN = "\x1b[32m";
