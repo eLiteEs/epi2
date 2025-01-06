@@ -166,6 +166,7 @@ int compile(String& command, String& returnS, String& exceptionN, int& line);
 String typeIn(String content);
 
 void translateString(String& s, int line, String& exceptionN);
+string translateSingleString(string s, int line, string exceptionN);
 
 string translateSingleString(string s, int line, string exceptionN) {
     String result = "";
@@ -566,21 +567,20 @@ string translateSingleString(string s, int line, string exceptionN) {
 }
 
 // Util Functions for compile
-void translateString(String& s, int line, String& exceptionN) {
+void translateString(string& s, int line, string& exceptionN) {
     removeSpacesOutsideQuotes(s);
-    String result = "";
+    string result = "";
 
-
-    if(canBeOperation(s)) {
+    if (canBeOperation(s)) {
         result = to_string(calculate(s));
         s = result;
         return;
     }
 
-    if(isCharOutsideQoutes(s, '+')) {
-        std::vector<std::string> parts = splitOutsideQuotes(s, '+');
+    if (isCharOutsideQoutes(s, '+')) {
+        vector<string> parts = splitOutsideQuotes(s, '+');
 
-        for (const auto &part : parts) {
+        for (const auto& part : parts) {
             result += translateSingleString(part, line, exceptionN);
         }
     } else {
@@ -589,7 +589,6 @@ void translateString(String& s, int line, String& exceptionN) {
 
     s = result;
 }
-
 
 Variable analyze(String s, int line, String& exceptionN) {
     String i = s;
