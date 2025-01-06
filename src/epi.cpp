@@ -812,7 +812,7 @@ int run(String& command, String& returnS, string& exceptionN, int& line, int lin
         String s = command.substr(desCommand.length() + 1);
         translateString(s, line, exceptionN);
         cout << s << "\n";
-    } else if(desCommand == "printc") {
+    } else if(desCommand == "printc" || desCommand == "outc") {
         // print function is for printing text into the screen but without new line
         // @example printc "Hello, " + username + "!"
         // @since v_0.1
