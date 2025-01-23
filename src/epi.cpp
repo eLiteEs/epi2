@@ -666,10 +666,11 @@ String switchText = "";
 
 bool skipSwitch = false;
 
+bool doingExternal = false;
+string externalLang = "";
+string externalCode = "";
 
 int compile(String& command, String& returnS, String& exceptionN, int& line) {
-    if(command.empty()) { return 0; }
-
     if(writingFunction) {
         if(command.substr(0,4) == "    " && functionToWrite != "") {
             command = command.substr(4);
@@ -770,6 +771,33 @@ int compile(String& command, String& returnS, String& exceptionN, int& line) {
 
             run(command, returnS, exceptionN, line);
         }
+    } else if(doingExternal) {
+        if(command.substr(0,4) == "    ") {
+            string com = command.substr(4);
+            
+            externalCode += com + "\n";
+        } else {
+            doingExternal = false;
+
+            if(externalLang == "python") {
+                ofstream f("temp.py");
+                f << externalCode;
+                f.close();
+                system("python temp.py");
+                remove("temp.py");
+            } else if(externalLang == "bat") {
+                ofstream f("temp.bat");
+                f << "@echo off" << "\n";
+                f << externalCode;
+                f.close();
+                system(".\\temp.bat");
+                remove("temp.bat");
+            }
+
+            externalCode = "";
+            externalLang = "";
+            run(command, returnS, exceptionN, line);
+        }
     } else {
         run(command, returnS, exceptionN, line);
     }
@@ -780,6 +808,8 @@ int compile(String& command, String& returnS, String& exceptionN, int& line) {
 bool prevLineComment = false;
 
 int run(String& command, String& returnS, string& exceptionN, int& line, int line2) {
+    if(command.empty()) { return 0; }
+
     while(command.substr(0,4) == "    ") {
         command = command.substr(4);
     }
@@ -1227,6 +1257,11 @@ int run(String& command, String& returnS, string& exceptionN, int& line, int lin
         } else {
             throwError("epi2.values.empty_value", "You should initialize the value for using it.", exceptionN, line);            
         }
+    } else if(desCommand == "external") {
+        string extLang = command.substr(desCommand.length() + 1);
+        translateString(extLang, line, exceptionN);
+        externalLang = extLang;
+        doingExternal = true;
     } else {
         removeSpacesOutsideQuotes(command);
 
@@ -1298,6 +1333,8 @@ void processFile(const std::string& s) {
     }
 
     f.close();
+
+    lines.push_back("");
 
     // Process lines after reading
     for (String& line : lines) {

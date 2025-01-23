@@ -1,0 +1,4 @@
+external "python"
+    print("Hello, World!")
+    username = input("username: ")
+    print("Hello, " + username)
