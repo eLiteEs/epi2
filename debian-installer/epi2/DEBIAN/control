@@ -1,7 +1,0 @@
-Package: epi2
-Version: 0.202
-Section: utils
-Priority: optional
-Architecture: amd64
-Maintainer: Blas Fernández <elite.atencionalcliente@gmail.com>
-Description: High-level programming language made with C++

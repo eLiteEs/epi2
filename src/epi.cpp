@@ -656,7 +656,7 @@ void logThings(String command, int line, bool onFunction, String functionName, i
         result += to_string(line);
     }
 
-    result += "; On try: " + onTry;
+    result += &"; On try: " [ onTry];
     fileObject << result + "\n";
 }
 
@@ -1027,7 +1027,7 @@ int run(String& command, String& returnS, string& exceptionN, int& line, int lin
                         return 1;
                     }
                 }
-                f.good();
+                f.close();
             } else {
                 cout << ASCII_BOLD << BRIGHT_WHITE << "[" << line << "] " << ASCII_RESET << ASCII_BOLD<< ASCII_RED << "epi2.error.lang.unknownlibrary" << ASCII_RESET << " - " << ASCII_RED << "That library doesn't exist or the file doesn't exist.\n" << ASCII_RESET;
                 exceptionN = "epi2.error.lang.unknownlibrary";
