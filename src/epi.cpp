@@ -1412,7 +1412,66 @@ int main(int argc, char** argv) {
             remove("epi2.debug.log");
         }
         if(exists(s)) {
-            processFile(s);
+            if(isStrOnCharArr("--o", argv, argc)) {
+                const char *output = R""""(
+#include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+using namespace std;
+
+int main() {
+                )"""";
+
+                fstream of("temp.cpp", ios::out);
+
+                of << output;
+
+                fstream f(s, ios::in);
+
+                String line;
+                
+                while(getline(f, line)) {
+                    of << "\t";
+                    if(line.substr(0,6) == "print ") {
+                        String content = line.substr(6);
+                        translateString(content, 0, line);
+                        of << "cout << \"" + content + "\\n\";\n";
+                    } else if(line.substr(0,7) == "printc ") {
+                        String content = line.substr(7);
+                        translateString(content, 0, line);
+                        of << "cout << \"" + content + "\";\n";
+                    } else if(line.substr(0,4) == "cmd ") {
+                        String content = line.substr(4);
+                        translateString(content, 0, line);
+                        of << "system(\"" + content + "\");\n";
+                    } else if(line.substr(0,3) == "in") {
+                        String content = line.substr(3);
+                        translateString(content, 0, line);
+                        of << "cin >> " + content + ";\n";
+                    } else {
+                        of << "// " + line + "\n";
+                    }
+                }
+
+                const char *end = R""""(
+    return 0;
+}
+                )"""";
+
+                of <<  end;
+
+                of.close();
+                f.close();
+
+                string c = "g++ temp.cpp -o " + s.substr(0, s.find_last_of('.')) + ".exe";
+                system(c.c_str());
+                remove("temp.cpp");
+            } else {
+                processFile(s);
+            }
         } else {
             cout << ASCII_BOLD << BRIGHT_RED << "Fatal Error: The file you gave doesn't exist.\n" << ASCII_RESET;
         }
