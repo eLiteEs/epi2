@@ -1343,6 +1343,33 @@ void processFile(const std::string& s) {
     }
 }
 
+bool cpp_writing_function = false;
+
+string toCpp(string line, string& beforeMain) {
+    if(line.substr(0,6) == "print ") {
+        String content = line.substr(6);
+        translateString(content, 0, line);
+        return "cout << \"" + content + "\\n\";\n";
+    } else if(line.substr(0,7) == "printc ") {
+        String content = line.substr(7);
+        translateString(content, 0, line);
+        return "cout << \"" + content + "\";\n";
+    } else if(line.substr(0,4) == "cmd ") {
+        String content = line.substr(4);
+        translateString(content, 0, line);
+        return "system(\"" + content + "\");\n";
+    } else if(line.substr(0,3) == "in") {
+        String content = line.substr(3);
+        translateString(content, 0, line);
+        return "cin >> " + content + ";\n";
+    } else if(line.substr(0,9) == "function ") {
+        beforeMain += "void " + line.substr(9) + "() {\n";
+        cpp_writing_function = true;
+    } else {
+        return "// " + line + "\n";
+    }
+}
+
 // Main
 int main(int argc, char** argv) {
     if(isStrOnCharArr("--version", argv, argc)) {
@@ -1413,7 +1440,7 @@ int main(int argc, char** argv) {
         }
         if(exists(s)) {
             if(isStrOnCharArr("--o", argv, argc)) {
-                const char *output = R""""(
+                const char *start = R""""(
 #include <iostream>
 #include <string>
 #include <vector>
@@ -1422,37 +1449,30 @@ int main(int argc, char** argv) {
 
 using namespace std;
 
-int main() {
+
                 )"""";
+
+                string beforeMain = "";
 
                 fstream of("temp.cpp", ios::out);
 
-                of << output;
+                of << start;
 
                 fstream f(s, ios::in);
 
-                String line;
+                String line, main = "";
                 
                 while(getline(f, line)) {
                     of << "\t";
-                    if(line.substr(0,6) == "print ") {
-                        String content = line.substr(6);
-                        translateString(content, 0, line);
-                        of << "cout << \"" + content + "\\n\";\n";
-                    } else if(line.substr(0,7) == "printc ") {
-                        String content = line.substr(7);
-                        translateString(content, 0, line);
-                        of << "cout << \"" + content + "\";\n";
-                    } else if(line.substr(0,4) == "cmd ") {
-                        String content = line.substr(4);
-                        translateString(content, 0, line);
-                        of << "system(\"" + content + "\");\n";
-                    } else if(line.substr(0,3) == "in") {
-                        String content = line.substr(3);
-                        translateString(content, 0, line);
-                        of << "cin >> " + content + ";\n";
+                    if(cpp_writing_function) {
+                        if(line.substr(0,4) != "    ") {
+                            beforeMain += "}\n";
+                            cpp_writing_function = false;
+                        } else {
+                            beforeMain += toCpp(line, beforeMain);
+                        }
                     } else {
-                        of << "// " + line + "\n";
+                        main += toCpp(line, beforeMain);
                     }
                 }
 
@@ -1461,7 +1481,15 @@ int main() {
 }
                 )"""";
 
-                of <<  end;
+                of << start;
+
+                of << beforeMain;
+
+                of << "int main() {\n";
+
+                of << main;
+
+                of << end;
 
                 of.close();
                 f.close();
