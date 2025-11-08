@@ -1417,7 +1417,9 @@ int main(int argc, char** argv) {
             cout << ASCII_BOLD << BRIGHT_RED << "Fatal Error: The file you gave doesn't exist.\n" << ASCII_RESET;
         }
     } else {
-        system("title epi2");
+        #ifndef _WIN32
+	    system("title epi2");
+	    #endif
         cout << ASCII_BG_GREEN << ASCII_BLACK << ASCII_BOLD << " * " << ASCII_RESET << " epi" << (char) 253 << " v_0.203\nEnter any epi" << (char) 253 << " command or enter \"help\" for get a list of commands.\n";
         String command = "";
         while (command != "exit()") {
