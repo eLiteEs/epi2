@@ -31,10 +31,11 @@ In this repo you can find the code of epi2 programming language.
 3. Then you can use `epi2` on Terminal.
 > **Note**: You should have `g++` installed for installing epi2. Until I don't sign the program, this will be required, if not Windows Defender will mark this software as malware. 
 
-## Installation for Linux using Shell
+## Installation for Linux using Bash 
 1. Clone or download this repository to a folder. Git: `git clone https://github.com/eLiteEs/epi2.git` GitHub CLI: `gh repo clone eLiteEs/epi2` or download the code from GitHub.
-2. Open the folder on the Terminal and run the script `install.sh`. That script will build the project using `g++`, create a folder on your user folder, move all epi2 files into that folder and add epi2 to `PATH` enviroment variable.
-> **Note**: You should have `g++` installed for installing epi2. Until I don't sign the program, this will be required, if not Windows Defender will mark this software as malware. 
+2. Run `make install` to build and install epi2 in your system.
+
+> **NOTE**: After running `make install be sure to run `source ~/.bashrc` for adding epi2 executables to PATH.
 
 ## Colaborating to this project
 ### Table of contents
@@ -73,7 +74,7 @@ Don't change the tab indent on the files, normally epi2 is written with 4 spaces
 
 ## Building the project
 On Windows you can run `build.bat` or `build.ps1` scripts for building the executables of epi2. You can also run the `test.exe` file for checking if the code has some performance issues.
-On Linux you can use the `build.sh` script for building the project and `test-linux.sh` script for checking if the code has performance issues.
+On Linux you can use the `make build` script for building the project and `make test` or `make full-test` scripts for checking if the code has performance issues.
 
 ## Creating Pull Requests
 If you create a Pull Request add a description about what did you changed and how it was before. If it's a new feature be sure that it works correctly.

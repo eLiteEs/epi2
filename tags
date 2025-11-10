@@ -1,0 +1,198 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ASCII_BG_BLACK	src/utils/colors.cpp	/^const std::string ASCII_BG_BLACK = "\\x1b[40m";$/;"	v
+ASCII_BG_BLUE	src/utils/colors.cpp	/^const std::string ASCII_BG_BLUE = "\\x1b[44m";$/;"	v
+ASCII_BG_CYAN	src/utils/colors.cpp	/^const std::string ASCII_BG_CYAN = "\\x1b[46m";$/;"	v
+ASCII_BG_GREEN	src/utils/colors.cpp	/^const std::string ASCII_BG_GREEN = "\\x1b[42m";$/;"	v
+ASCII_BG_MAGENTA	src/utils/colors.cpp	/^const std::string ASCII_BG_MAGENTA = "\\x1b[45m";$/;"	v
+ASCII_BG_RED	src/utils/colors.cpp	/^const std::string ASCII_BG_RED = "\\x1b[41m";$/;"	v
+ASCII_BG_WHITE	src/utils/colors.cpp	/^const std::string ASCII_BG_WHITE = "\\x1b[47m";$/;"	v
+ASCII_BG_YELLOW	src/utils/colors.cpp	/^const std::string ASCII_BG_YELLOW = "\\x1b[43m";$/;"	v
+ASCII_BLACK	src/utils/colors.cpp	/^const std::string ASCII_BLACK = "\\x1b[30m";$/;"	v
+ASCII_BLINK	src/utils/colors.cpp	/^const std::string ASCII_BLINK = "\\x1b[5m";       \/\/ Blinking text$/;"	v
+ASCII_BLUE	src/utils/colors.cpp	/^const std::string ASCII_BLUE = "\\x1b[34m";$/;"	v
+ASCII_BOLD	src/downloadbar-utils.cpp	/^const std::string ASCII_BOLD = "\\x1b[1m";$/;"	v
+ASCII_CYAN	src/utils/colors.cpp	/^const std::string ASCII_CYAN = "\\x1b[36m";$/;"	v
+ASCII_DIM	src/utils/colors.cpp	/^const std::string ASCII_DIM = "\\x1b[2m";         \/\/ Dim text$/;"	v
+ASCII_GREEN	src/downloadbar-utils.cpp	/^const std::string ASCII_GREEN = "\\x1b[32m";$/;"	v
+ASCII_HIDDEN	src/utils/colors.cpp	/^const std::string ASCII_HIDDEN = "\\x1b[8m";      \/\/ Hidden text$/;"	v
+ASCII_MAGENTA	src/utils/colors.cpp	/^const std::string ASCII_MAGENTA = "\\x1b[35m";$/;"	v
+ASCII_RED	src/downloadbar-utils.cpp	/^const std::string ASCII_RED = "\\x1b[31m";$/;"	v
+ASCII_RESET	src/downloadbar-utils.cpp	/^const std::string ASCII_RESET = "\\x1b[0m" + ASCII_WHITE;$/;"	v
+ASCII_REVERSE	src/utils/colors.cpp	/^const std::string ASCII_REVERSE = "\\x1b[7m";     \/\/ Reverse (swap foreground and background colors)$/;"	v
+ASCII_UNDERLINE	src/utils/colors.cpp	/^const std::string ASCII_UNDERLINE = "\\x1b[4m";   \/\/ Underlined text$/;"	v
+ASCII_WHITE	src/downloadbar-utils.cpp	/^const std::string ASCII_WHITE = "\\x1b[37m";$/;"	v
+ASCII_YELLOW	src/utils/colors.cpp	/^const std::string ASCII_YELLOW = "\\x1b[33m";$/;"	v
+BRIGHT_BLUE	src/utils/colors.cpp	/^const std::string BRIGHT_BLUE = "\\033[94m";$/;"	v
+BRIGHT_CYAN	src/utils/colors.cpp	/^const std::string BRIGHT_CYAN = "\\033[96m";$/;"	v
+BRIGHT_GREEN	src/utils/colors.cpp	/^const std::string BRIGHT_GREEN = "\\033[92m";$/;"	v
+BRIGHT_MAGENTA	src/utils/colors.cpp	/^const std::string BRIGHT_MAGENTA = "\\033[95m";$/;"	v
+BRIGHT_RED	src/utils/colors.cpp	/^const std::string BRIGHT_RED = "\\033[91m";$/;"	v
+BRIGHT_WHITE	src/utils/colors.cpp	/^const std::string BRIGHT_WHITE = "\\033[97m";$/;"	v
+BRIGHT_YELLOW	src/utils/colors.cpp	/^const std::string BRIGHT_YELLOW = "\\033[93m";$/;"	v
+COORD	src/utils/utils.cpp	/^struct COORD {$/;"	s	file:
+CreateStatusWindow	installer/install_epi2.cpp	/^HWND CreateStatusWindow(HINSTANCE hInstance) {$/;"	f
+DownloadFile	installer/install_epi2.cpp	/^void DownloadFile(const std::wstring& url, const std::wstring& filename) {$/;"	f
+File	src/epi.cpp	/^    File(String n, String f) {$/;"	f	class:File
+File	src/epi.cpp	/^class File {$/;"	c	file:
+Foundation	src/license.cpp	/^    the Free Software Foundation, either version 3 of the License, or$/;"	v
+GetCurrentUsername	installer/install_epi2.cpp	/^std::string GetCurrentUsername() {$/;"	f
+ID_BUTTON	installer/install_epi2.cpp	10;"	d	file:
+ID_BUTTON2	installer/install_epi2.cpp	11;"	d	file:
+ID_BUTTON_FINISH	installer/install_epi2.cpp	19;"	d	file:
+ID_COMBOBOX	installer/install_epi2.cpp	16;"	d	file:
+ID_EDITBOX	installer/install_epi2.cpp	12;"	d	file:
+ID_ICON	installer/install_epi2.cpp	15;"	d	file:
+ID_LABEL	installer/install_epi2.cpp	13;"	d	file:
+ID_LABEL_STATUS	installer/install_epi2.cpp	20;"	d	file:
+ID_LISTBOX	installer/install_epi2.cpp	14;"	d	file:
+ID_PROGRESS	installer/install_epi2.cpp	17;"	d	file:
+ID_STATUS	installer/install_epi2.cpp	18;"	d	file:
+IN	src/utils/utils.cpp	/^enum IN {$/;"	g	file:
+IN_BACK	src/utils/utils.cpp	/^    IN_BACK = 8,$/;"	e	enum:IN	file:
+IN_RET	src/utils/utils.cpp	/^    IN_RET = 13$/;"	e	enum:IN	file:
+LIBS	Makefile	/^LIBS = -lncurses -lcurl$/;"	m
+License	src/license.cpp	/^    product that is covered by this License, on a durable physical$/;"	v
+License	src/license.cpp	/^    the Free Software Foundation, either version 3 of the License, or$/;"	v
+License	src/license.cpp	/^  However, if you cease all violation of this License, then your$/;"	v
+Notices	src/license.cpp	/^    Appropriate Legal Notices; however, if the Program has interactive$/;"	v
+Notices	src/license.cpp	/^    interfaces that do not display Appropriate Legal Notices, your$/;"	v
+RESET_COLOR	src/utils/colors.cpp	/^std::string RESET_COLOR = "\\033[0m";/;"	v
+SOURCES	Makefile	/^SOURCES = src\/downloadbar-utils.cpp \\$/;"	m
+SetFileAssociation	installer/install_epi2.cpp	/^void SetFileAssociation(const std::wstring& extension, const std::wstring& progId, const std::wstring& application, const std::wstring& args, const std::wstring& description) {$/;"	f
+StatusWindowProc	installer/install_epi2.cpp	/^LRESULT CALLBACK StatusWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {$/;"	f
+String	src/utils/utils.cpp	/^typedef string String;$/;"	t	file:
+TARGET	Makefile	/^TARGET = target\/epi2$/;"	m
+UpdatePathVariable	installer/install_epi2.cpp	/^void UpdatePathVariable(const std::string& newPath) {$/;"	f
+Variable	src/epi.cpp	/^    Variable(String t, String n, String c) {$/;"	f	class:Variable
+Variable	src/epi.cpp	/^class Variable {$/;"	c	file:
+WARRANTY	src/license.cpp	/^    but WITHOUT ANY WARRANTY; without even the implied warranty of$/;"	v
+WinMain	installer/install_epi2.cpp	/^int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {$/;"	f
+WindowProc	installer/install_epi2.cpp	/^LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {$/;"	f
+X	src/utils/utils.cpp	/^    int X;$/;"	m	struct:COORD	file:
+Y	src/utils/utils.cpp	/^    int Y;$/;"	m	struct:COORD	file:
+analyze	src/epi.cpp	/^Variable analyze(String s, int line, String& exceptionN) {$/;"	f
+calculate	src/utils/calc.cpp	/^int calculate(const std::string& expression) {$/;"	f
+canBeOperation	src/utils/calc.cpp	/^bool canBeOperation(String s) {$/;"	f
+catchCode	src/epi.cpp	/^String catchCode = "";$/;"	v
+compile	src/epi.cpp	/^int compile(String& command, String& returnS, String& exceptionN, int& line) {$/;"	f
+content	src/epi.cpp	/^    String content = "";$/;"	m	class:Variable	file:
+countOccurencesOutsideQuotes	src/utils/utils.cpp	/^int countOccurencesOutsideQuotes(String s, char c) {$/;"	f
+createfolder	installer/install_epi2.cpp	/^void createfolder(std::string name) {$/;"	f
+debug	src/epi.cpp	/^bool debug = false;$/;"	v
+deletef	src/epi.cpp	/^    void deletef() {$/;"	f	class:File
+dirGUIIncluded	src/epi.cpp	/^bool dirGUIIncluded = false;$/;"	v
+displayProgressBar	src/downloadbar-utils.cpp	/^void displayProgressBar(double percentage) {$/;"	f
+document	src/license.cpp	/^of that license document, provided that the further restriction does$/;"	v
+doingCase	src/epi.cpp	/^bool doingCase = false;$/;"	v
+doingExternal	src/epi.cpp	/^bool doingExternal = false;$/;"	v
+doingSwitch	src/epi.cpp	/^bool doingSwitch = false;$/;"	v
+downloadFileWithProgress	src/downloadbar-utils.cpp	/^bool downloadFileWithProgress(const std::string& url, const std::string& localFile) {$/;"	f
+downloadFileWithProgress	src/downloadbar-utils.cpp	/^void downloadFileWithProgress(const std::string& url, const std::string& outputPath) {$/;"	f
+encryptText	src/utils/utils.cpp	/^std::string encryptText(const std::string& plainText, const std::string& key) {$/;"	f
+exceptions	src/license.cpp	/^form of a separately written license, or stated as exceptions;$/;"	v
+exists	installer/install_epi2.cpp	/^bool exists(std::string filename) {$/;"	f
+externalCode	src/epi.cpp	/^string externalCode = "";$/;"	v
+externalLang	src/epi.cpp	/^string externalLang = "";$/;"	v
+facilities	src/license.cpp	/^    that supports equivalent copying facilities, provided you maintain$/;"	v
+file	src/epi.cpp	/^String file = "";$/;"	v
+fileExistsOnInternet	src/downloadbar-utils.cpp	/^bool fileExistsOnInternet(const std::string& url) {$/;"	f
+filename	src/epi.cpp	/^    String filename;$/;"	m	class:File	file:
+files	src/epi.cpp	/^vector<File> files;$/;"	v
+files	src/license.cpp	/^additional terms that apply to those files, or a notice indicating$/;"	v
+files	src/license.cpp	/^must place, in the relevant source files, a statement of the$/;"	v
+findFirstIndexOutsideQuotes	src/utils/utils.cpp	/^int findFirstIndexOutsideQuotes(const std::string& input, const std::string& target) {$/;"	f
+functionToWrite	src/epi.cpp	/^String functionToWrite = "";$/;"	v
+functions	src/epi.cpp	/^vector<vector<String>> functions;$/;"	v
+getContent	src/epi.cpp	/^    String getContent() {$/;"	f	class:Variable
+getFilename	src/epi.cpp	/^    String getFilename() {$/;"	f	class:File
+getIndexFromArgumentList	src/utils/utils.cpp	/^String getIndexFromArgumentList(int ind, char** arr) {$/;"	f
+getName	src/epi.cpp	/^    String getName() {$/;"	f	class:File
+getName	src/epi.cpp	/^    String getName() {$/;"	f	class:Variable
+getType	src/epi.cpp	/^    String getType() {$/;"	f	class:Variable
+gotoxy	src/utils/utils.cpp	/^void gotoxy(int x, int y) {$/;"	f
+hFontLabel	installer/install_epi2.cpp	/^HFONT hFontLabel; \/\/ Fuente para el label$/;"	v
+hIcon	installer/install_epi2.cpp	/^HICON hIcon; \/\/ Imagen$/;"	v
+hbrBkgnd	installer/install_epi2.cpp	/^HBRUSH hbrBkgnd; \/\/ Pincel para el fondo de la ventana$/;"	v
+hdasljdsaj	src/epi.cpp	/^int hdasljdsaj = 0;$/;"	v
+holder	src/license.cpp	/^copyright holder, and you cure the violation prior to 30 days after$/;"	v
+in	src/license.cpp	/^    a) Convey the object code in, or embodied in, a physical product$/;"	v
+in	src/license.cpp	/^    b) Convey the object code in, or embodied in, a physical product$/;"	v
+indexOfStrOnCharArr	src/utils/utils.cpp	/^int indexOfStrOnCharArr(const std::string& str, char** arr, int argc) {$/;"	f
+interchange	src/license.cpp	/^    medium customarily used for software interchange, for a price no$/;"	v
+isAlpha	src/utils/utils.cpp	/^bool isAlpha(char c) {$/;"	f
+isCharOutsideQoutes	src/utils/utils.cpp	/^bool isCharOutsideQoutes(String s, char c) {$/;"	f
+isDigit	src/utils/utils.cpp	/^bool isDigit(char c) {$/;"	f
+isOpen	src/epi.cpp	/^    bool isOpen() {$/;"	f	class:File
+isReservedKeyword	src/utils/utils.cpp	/^bool isReservedKeyword(const string& n) {$/;"	f
+isStrOnCharArr	src/utils/utils.cpp	/^bool isStrOnCharArr(const std::string& str, char** arr, int argc) {$/;"	f
+isStringOn2DVector	src/utils/utils.cpp	/^bool isStringOn2DVector(vector<vector<String>> v, int i, String s) {$/;"	f
+isValidCharacter	src/utils/utils.cpp	/^bool isValidCharacter(char c) {$/;"	f
+it	src/license.cpp	/^received it, or any part of it, contains a notice stating that it is$/;"	v
+license	src/license.cpp	/^const char *license = R""""($/;"	v
+license	src/license.cpp	/^finally terminates your license, and (b) permanently, if the copyright$/;"	v
+license	src/license.cpp	/^form of a separately written license, or stated as exceptions;$/;"	v
+logThings	src/epi.cpp	/^void logThings(String command, int line, bool onFunction, String functionName, int line2, String runnedFunctionAs, bool onTry) {$/;"	f
+main	src/epi.cpp	/^int main(int argc, char** argv) {$/;"	f
+marks	src/license.cpp	/^    trade names, trademarks, or service marks; or$/;"	v
+material	src/license.cpp	/^    authors of the material; or$/;"	v
+material	src/license.cpp	/^    c) Prohibiting misrepresentation of the origin of that material, or$/;"	v
+means	src/license.cpp	/^violation by some reasonable means, this is the first time you have$/;"	v
+medium	src/license.cpp	/^in or on a volume of a storage or distribution medium, is called an$/;"	v
+model	src/license.cpp	/^    model, to give anyone who possesses the object code either (1) a$/;"	v
+name	src/epi.cpp	/^    String name = "";$/;"	m	class:Variable	file:
+nameAlreadyUsed	src/epi.cpp	/^bool nameAlreadyUsed(String name) {$/;"	f
+names	src/license.cpp	/^    trade names, trademarks, or service marks; or$/;"	v
+offer	src/license.cpp	/^    only if you received the object code with such an offer, in accord$/;"	v
+offer	src/license.cpp	/^    written offer, valid for at least three years and valid for as$/;"	v
+open	src/epi.cpp	/^    void open(String f) {$/;"	f	class:File
+opened	src/epi.cpp	/^    bool opened = false;$/;"	m	class:File	file:
+parts	src/license.cpp	/^    additional terms, to the whole of the work, and all its parts,$/;"	v
+place	src/license.cpp	/^must place, in the relevant source files, a statement of the$/;"	v
+prevLineComment	src/epi.cpp	/^bool prevLineComment = false;$/;"	v
+processFile	src/epi.cpp	/^void processFile(const std::string& s) {$/;"	f
+program	src/license.cpp	/^and which are not combined with it such as to form a larger program,$/;"	v
+read	src/epi.cpp	/^    String read() {$/;"	f	class:File
+readFileFromInternet	src/downloadbar-utils.cpp	/^std::string readFileFromInternet(const std::string& url) {$/;"	f
+recipient	src/license.cpp	/^    it) with contractual assumptions of liability to the recipient, for$/;"	v
+removeSpacesOutsideQuotes	src/utils/utils.cpp	/^void removeSpacesOutsideQuotes(std::string &s) {$/;"	f
+replaceAll	src/utils/utils.cpp	/^void replaceAll(std::string& str, const std::string& from, const std::string& to) {$/;"	f
+replaceNthOccurrence	src/utils/utils.cpp	/^std::string replaceNthOccurrence(const std::string& original, const std::string& toFind, const std::string& replacement, size_t occurrence) {$/;"	f
+replaceOutsideQuotes	src/utils/utils.cpp	/^std::string replaceOutsideQuotes(const std::string &input, const std::string &toReplace, const std::string &replaceWith) {$/;"	f
+restriction	src/license.cpp	/^restriction, you may remove that term.  If a license document contains$/;"	v
+run	src/epi.cpp	/^int run(String& command, String& returnS, string& exceptionN, int& line, int line2) {$/;"	f
+setContent	src/epi.cpp	/^    void setContent(String newcontent) {$/;"	f	class:Variable
+setType	src/epi.cpp	/^    void setType(String newtype) {$/;"	f	class:Variable
+showDialog	src/noerrorfile.cpp	/^void showDialog(const std::string& message, const std::string& title) {$/;"	f
+skipSwitch	src/epi.cpp	/^bool skipSwitch = false;$/;"	v
+source	src/license.cpp	/^    conveying of source, or (2) access to copy the$/;"	v
+splitOutsideQuotes	src/utils/utils.cpp	/^std::vector<std::string> splitOutsideQuotes(const std::string& str, char c) {$/;"	f
+splitString	src/utils/utils.cpp	/^std::vector<std::string> splitString(const std::string& input, char delimiter) {$/;"	f
+splitStringUsingString	src/utils/utils.cpp	/^std::vector<std::string> splitStringUsingString(const std::string& input, const std::string& delimiter) {$/;"	f
+stringToWstring	installer/install_epi2.cpp	/^std::wstring stringToWstring(const std::string& str) {$/;"	f
+switchText	src/epi.cpp	/^String switchText = "";$/;"	v
+takePasswdFromUser	src/utils/utils.cpp	/^string takePasswdFromUser(String t)$/;"	f
+terms	src/license.cpp	/^    additional terms, to the whole of the work, and all its parts,$/;"	v
+throwError	src/epi.cpp	/^void throwError(String error, String message, String& exceptionN, int line, bool onFunction = false, String functionName = "", int& line2 = hdasljdsaj, bool isOnTry = false) {$/;"	f
+trademarks	src/license.cpp	/^    trade names, trademarks, or service marks; or$/;"	v
+translateSingleString	src/epi.cpp	/^string translateSingleString(string s, int line, string exceptionN) {$/;"	f
+translateString	src/epi.cpp	/^void translateString(string& s, int line, string& exceptionN) {$/;"	f
+tryCode	src/epi.cpp	/^String tryCode = "";$/;"	v
+type	src/epi.cpp	/^    String type = "";$/;"	m	class:Variable	file:
+typeIn	src/epi.cpp	/^String typeIn(String content) {$/;"	f
+validateVariableName	src/utils/utils.cpp	/^bool validateVariableName(const string& n) {$/;"	f
+values	src/epi.cpp	/^vector<Variable> values;$/;"	v
+varName	src/epi.cpp	/^    String varName;$/;"	m	class:File	file:
+variables	src/epi.cpp	/^vector<Variable> variables;$/;"	v
+version	src/license.cpp	/^    reasonable ways as different from the original version; or$/;"	v
+whole	src/license.cpp	/^    c) You must license the entire work, as a whole, under this$/;"	v
+work	src/license.cpp	/^    additional terms, to the whole of the work, and all its parts,$/;"	v
+work	src/license.cpp	/^works, which are not by their nature extensions of the covered work,$/;"	v
+write	src/epi.cpp	/^    void write(String c) {$/;"	f	class:File
+writingCatch	src/epi.cpp	/^bool writingCatch = false;$/;"	v
+writingFunction	src/epi.cpp	/^bool writingFunction = false;$/;"	v
+writingTry	src/epi.cpp	/^bool writingTry = false;$/;"	v

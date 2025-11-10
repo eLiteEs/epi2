@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Go to $HOME
+cd $HOME
+
 # Remove the epi2 directory from the user's home directory
 rm -rf $HOME/epi2
 
