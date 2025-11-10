@@ -1348,7 +1348,7 @@ int main(int argc, char** argv) {
     if(isStrOnCharArr("--version", argv, argc)) {
         cout << "epi" << (char) 253 << " v_0.203\n";
         cout << "This program is open-source software licensed with GNU GPL v3.\n";
-        cout << "Run \"epi --show-license\" for reading it.\n";
+        cout << "Run \"epi2 --show-license\" for reading it.\n";
         cout << "You can modify this code BUT the name of the new program should contain the \"" << (char) 253 << "\" symbol.\n";
         return 0;
     }
@@ -1434,7 +1434,7 @@ int main(int argc, char** argv) {
             } else if(command == "version") {
                 cout << "epi" << (char) 253 << " v_0.203\n";
                 cout << "This program is open-source software licensed with GNU GPL v3.\n";
-                cout << "Run \"epi --show-license\" for reading the license.\n";
+                cout << "Run \"epi2 --show-license\" for reading the license.\n";
                 cout << "You can modify this code BUT the name of the new program should contain the \"" << (char) 253 << "\" symbol.\n";
             } else {
                 String returnS;
