@@ -14,6 +14,7 @@ SOURCES = src/downloadbar-utils.cpp \
 build: $(TARGET)
 
 $(TARGET): $(SOURCES)
+	@mkdir -p target
 	$(++) $(++FLAGS) src/epi.cpp -o $(TARGET) $(LIBS)
 
 test: $(SOURCES)
