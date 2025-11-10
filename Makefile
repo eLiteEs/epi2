@@ -35,7 +35,7 @@ install: build
 
 	@printf "\033[36m→ Adding epi2 to PATH\033[0m\n"
 	@if ! grep -q '$(HOME)/epi2' ~/.bashrc; then \
-				echo 'export PATH=$$PATH:$(HOME)/epi2' >> ~/.bashrc; \
+				echo 'export PATH=$$PATH:$(HOME)/epi2/epi2' >> ~/.bashrc; \
 					fi
 
 	@printf "\033[33m! For adding epi2 to PATH you should run \"source ~/.bashrc\" manually\033[0m\n"
