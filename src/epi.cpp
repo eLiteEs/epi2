@@ -566,6 +566,47 @@ string translateSingleString(string s, int line, string exceptionN) {
     return result;
 }
 
+string get_text_inside_parenthethes(string s) {
+	int parenthesesCount = 0;
+	string result = "";
+    bool insideQuotes = false;
+
+	for(int i = 0; i < s.length(); i++)
+	{
+		const char c = s[i];
+		if(c == '(' && !insideQuotes) 
+		{
+			if(parenthesesCount >= 1) 
+			{
+				result += c;
+			}
+			parenthesesCount++;
+		} else if(c == ')' && !insideQuotes)
+		{
+			if(parenthesesCount == 0) 
+			{
+				return "";
+			} else if(parenthesesCount >= 2)
+			{
+				result += c;
+			}
+			parenthesesCount--;
+		} else if(c == '\"') 
+        {
+            if(parenthesesCount >= 1) 
+            {
+                result += c;
+            }
+            insideQuotes = !insideQuotes;
+        } else if(parenthesesCount >= 1)
+		{
+			result += c;
+		}
+	}
+
+	return result;
+}
+
 // Util Functions for compile
 void translateString(string& s, int line, string& exceptionN) {
     removeSpacesOutsideQuotes(s);
@@ -581,6 +622,15 @@ void translateString(string& s, int line, string& exceptionN) {
         vector<string> parts = splitOutsideQuotes(s, '+');
 
         for (const auto& part : parts) {
+            // Check if the part is another part
+            if(part.c_str()[0] == '(' && part.c_str()[part.length() - 1] == ')') {
+                string innerText = get_text_inside_parenthethes(part); // part = "(2 + 2)" > "2 + 2"
+                translateString(innerText, line, exceptionN);
+                result += innerText;
+
+                continue;
+            }
+                    
             result += translateSingleString(part, line, exceptionN);
         }
     } else {
@@ -1418,8 +1468,8 @@ int main(int argc, char** argv) {
         }
     } else {
         #ifndef _WIN32
-	    system("title epi2");
-	    #endif
+	        system("title epi2");
+	        #endif
         cout << ASCII_BG_GREEN << ASCII_BLACK << ASCII_BOLD << " * " << ASCII_RESET << " epi" << (char) 253 << " v_0.203\nEnter any epi" << (char) 253 << " command or enter \"help\" for get a list of commands.\n";
         String command = "";
         while (command != "exit()") {
