@@ -111,12 +111,19 @@ std::vector<std::string> splitOutsideQuotes(const std::string& str, char c) {
     std::vector<std::string> result;
     std::string temp;
     bool inQuotes = false;
+    int parenthesesDepth = 0;
 
     for (size_t i = 0; i < str.size(); ++i) {
         if (str[i] == '\"') {
             inQuotes = !inQuotes;
             temp += str[i];
-        } else if (str[i] == c && !inQuotes) {
+        } else if(str[i] == '(' && !inQuotes) {
+            parenthesesDepth++;
+            temp += "(";
+        } else if(str[i] == ')' && !inQuotes && parenthesesDepth != 0) {
+            parenthesesDepth--;
+            temp += ")";
+        } else if (str[i] == c && !inQuotes && parenthesesDepth == 0) {
             if (!temp.empty()) {
                 result.push_back(temp);
                 temp.clear();

@@ -2,7 +2,7 @@
 
 bool canBeOperation(String s) {
     for(long long unsigned int i = 0; i < s.length(); i++) {
-        if(!isDigit(s.c_str()[i]) && s.c_str()[i] != '+' && s.c_str()[i] != '-' && s.c_str()[i] != '/' && s.c_str()[i] != '*') {
+        if(!isDigit(s.c_str()[i]) && s.c_str()[i] != '+' && s.c_str()[i] != '-' && s.c_str()[i] != '/' && s.c_str()[i] != '*' && s.c_str()[i] != '(' && s.c_str()[i] != ')') {
             return false;
         }
     }
