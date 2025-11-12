@@ -17,6 +17,15 @@ $(TARGET): $(SOURCES)
 	@mkdir -p target
 	$(++) $(++FLAGS) src/epi.cpp -o $(TARGET) $(LIBS)
 
+run: build
+	@$(TARGET)
+
+debug: clean 
+debug: ++FLAGS += -g -O0
+debug: build
+debug:
+	gdb -tui ./$(TARGET)
+
 test: $(SOURCES)
 	$(++) $(++FLAGS) -fsyntax-only src/epi.cpp $(LIBS)
 
