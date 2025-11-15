@@ -1418,6 +1418,8 @@ string toCpp(string line, string& beforeMain) {
     } else {
         return "// " + line + "\n";
     }
+
+	return NULL;
 }
 
 // Main
