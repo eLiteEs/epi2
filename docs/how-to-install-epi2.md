@@ -14,6 +14,12 @@ You can download the .zip file containing the epi² executables for Linux from t
 
 You have to manually setup the `PATH Variable` for running it on the terminal and optionally file asociations.
 
+### Building from source
+
+1. Clone the git repo of epi2 running `git clone https://github.com/eLiteEs/epi2.git`
+2. From the repo, run `make install`. That command builds epi2 and moves all the files to a new directory. It also prepared the `.bashrc` with the new epi2 executable.
+3. Run `source ~/.bashrc` for configurating properly the PATH variable and running epi2 from anywhere.
+
 ## On MacOS
 We tried our best trying to compile epi² for MacOS using GitHub Actions but it didn't worked because it doesn't work at all.
 
