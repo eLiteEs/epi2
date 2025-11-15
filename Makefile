@@ -1,7 +1,11 @@
-++ = g++
-++FLAGS = -std=c++17
-LIBS = -lncurses -lcurl
+CXX = g++
+CXXFLAGS = -std=c++17
+LIBS = -lncurses -lcurl -lwininet
 TARGET = target/epi2
+
+ifeq ($(OS),Windows_NT)
+    LIBS += -lwininet
+endif
 
 SOURCES = src/downloadbar-utils.cpp \
 		  src/epi.cpp \
@@ -15,7 +19,7 @@ build: $(TARGET)
 
 $(TARGET): $(SOURCES)
 	@mkdir -p target
-	$(++) $(++FLAGS) src/epi.cpp -o $(TARGET) $(LIBS)
+	$(CXX) $(CXXFLAGS) src/epi.cpp -o $(TARGET) $(LIBS)
 
 run: build
 	@$(TARGET)
@@ -27,7 +31,7 @@ debug:
 	gdb -tui ./$(TARGET)
 
 test: $(SOURCES)
-	$(++) $(++FLAGS) -fsyntax-only src/epi.cpp $(LIBS)
+	$(CXX) $(CXXFLAGS) -fsyntax-only src/epi.cpp $(LIBS)
 
 full-test: $(SOURCES)
 	@for f in $(SOURCES); do \
@@ -54,4 +58,3 @@ install: build
 clean:
 	rm -rf target
 	mkdir -p target
-
