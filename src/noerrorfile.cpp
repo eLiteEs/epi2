@@ -1,3 +1,5 @@
+#include "noerrorfile.h"
+
 #include <iostream>
 #include <string>
 

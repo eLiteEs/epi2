@@ -8,18 +8,19 @@ ifeq ($(OS),Windows_NT)
 endif
 
 SOURCES = src/downloadbar-utils.cpp \
-		  src/epi.cpp \
-		  src/license.cpp \
-		  src/noerrorfile.cpp \
-		  src/utils/calc.cpp \
-		  src/utils/colors.cpp \
-		  src/utils/utils.cpp
+          src/epi.cpp \
+          src/license.cpp \
+          src/noerrorfile.cpp \
+		  src/color.cpp \
+          third-parties/linenoise-ng/linenoise.cpp \
+          third-parties/linenoise-ng/ConvertUTF.cpp \
+          third-parties/linenoise-ng/wcwidth.cpp \
 
 build: $(TARGET)
 
 $(TARGET): $(SOURCES)
 	@mkdir -p target
-	$(CXX) $(CXXFLAGS) src/epi.cpp -o $(TARGET) $(LIBS)
+	$(CXX) $(CXXFLAGS) $(SOURCES) -o $(TARGET) $(LIBS)
 
 run: build
 	@$(TARGET)
@@ -27,11 +28,10 @@ run: build
 debug: clean 
 debug: ++FLAGS += -g -O0
 debug: build
-debug:
 	gdb -tui ./$(TARGET)
 
 test: $(SOURCES)
-	$(CXX) $(CXXFLAGS) -fsyntax-only src/epi.cpp $(LIBS)
+	$(CXX) $(CXXFLAGS) -fsyntax-only $(SOURCES) $(LIBS)
 
 full-test: $(SOURCES)
 	@for f in $(SOURCES); do \

@@ -1,3 +1,5 @@
+#include "downloadbar-utils.h"
+
 #include <iostream>
 #include <sstream>
 #include <cstring>
@@ -29,15 +31,9 @@
 	#include <unistd.h>
 #endif
 
-#include "utils/colors.cpp"
+#include "color.hpp"
 
 using namespace std;
-
-const std::string ASCII_GREEN = "\x1b[32m";
-const std::string ASCII_BOLD = "\x1b[1m";
-const std::string ASCII_RED = "\x1b[31m";
-const std::string ASCII_WHITE = "\x1b[37m";
-const std::string ASCII_RESET = "\x1b[0m" + ASCII_WHITE;
 
 #ifdef _WIN32
 bool fileExistsOnInternet(const std::string& url) {

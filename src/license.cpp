@@ -1,3 +1,5 @@
+#include "license.h"
+
 // This file contains the license on formatted text for it not filling up epi.cpp file. :)
 
 const char *license = R""""(

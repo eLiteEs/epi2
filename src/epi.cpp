@@ -3,9 +3,10 @@
 // @date 31-07-24
 // @brief Nice programming language
 
-#include "noerrorfile.cpp"
-#include "license.cpp"
-#include "downloadbar-utils.cpp"
+#include "noerrorfile.h"
+#include "license.h"
+#include "color.hpp"
+#include "downloadbar-utils.h"
 #include "utils/calc.cpp"
 
 int hdasljdsaj = 0;
@@ -623,8 +624,8 @@ void translateString(string& s, int line, string& exceptionN) {
 
 		for (const auto& part : parts) {
 			// Check if the part is another part
-			if(part.c_str()[0] == '(' && part.c_str()[part.length() - 1] == ')') {
-				string innerText = get_text_inside_parenthethes(part); // part = "(2 + 2)" > "2 + 2"
+			if(part.front() == '(' && part.back() == ')') {
+				string innerText = get_text_inside_parenthethes(part); // part = "(2 + 2)" -> "2 + 2"
 				translateString(innerText, line, exceptionN);
 				result += innerText;
 
@@ -1496,13 +1497,13 @@ int main(int argc, char** argv) {
 			cout << ASCII_BOLD << BRIGHT_RED << "Fatal Error: The file you gave doesn't exist.\n" << ASCII_RESET;
 		}
 	} else {
-		#ifndef _WIN32
+		#ifndef WIN32
 		system("title epi2");
 		#endif
 		cout << ASCII_BG_GREEN << ASCII_BLACK << ASCII_BOLD << " * " << ASCII_RESET << " epi" << (char) 253 << " v_0.203\nEnter any epi" << (char) 253 << " command or enter \"help\" for get a list of commands.\n";
 		String command = "";
 		while (command != "exit()") {
-			cout << " " << ASCII_BOLD << BRIGHT_WHITE << ">> " << ASCII_RESET;
+			cout << ASCII_BOLD << BRIGHT_WHITE << ">> " << ASCII_RESET;
 			getline(cin, command);
 			if(command == "exit()") {} else if(command == "help") {
 				cout << "List of commands:\n";
