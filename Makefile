@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17
+CXXFLAGS = -std=c++17 -Ithird-parties
 LIBS = -lncurses -lcurl -lwininet
 TARGET = target/epi2
 
@@ -12,9 +12,7 @@ SOURCES = src/downloadbar-utils.cpp \
           src/license.cpp \
           src/noerrorfile.cpp \
 		  src/color.cpp \
-          third-parties/linenoise-ng/linenoise.cpp \
-          third-parties/linenoise-ng/ConvertUTF.cpp \
-          third-parties/linenoise-ng/wcwidth.cpp \
+          third-parties/lineeditor/lineeditor.cpp
 
 build: $(TARGET)
 

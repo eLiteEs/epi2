@@ -8,6 +8,8 @@
 #include "color.hpp"
 #include "downloadbar-utils.h"
 #include "utils/calc.cpp"
+#include "lineeditor/lineeditor.h"
+#include <cstdlib>
 
 int hdasljdsaj = 0;
 bool debug = false;
@@ -1425,6 +1427,28 @@ string toCpp(string line, string& beforeMain) {
 
 // Main
 int main(int argc, char** argv) {
+	
+
+	MultilineEditor editor;
+    std::string input;
+    
+    editor.SetMultiLineMode(true);
+    
+    while (true) {
+        if (editor.Edit(input, "edit> ")) {
+            if (input == "exit") break;
+            std::cout << "Texto ingresado:\n" << input << "\n";
+            editor.AddHistory(input);
+        } else {
+            break;
+        }
+    }
+    
+    return 0;
+
+	return 0;
+
+
 	if(isStrOnCharArr("--version", argv, argc)) {
 		cout << "epi" << (char) 253 << " v_0.203\n";
 		cout << "This program is open-source software licensed with GNU GPL v3.\n";
