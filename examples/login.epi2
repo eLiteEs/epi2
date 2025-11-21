@@ -3,6 +3,4 @@ function getUsername:
     in username
     return username
 
-var username = #getUsername
-
-print "Username: " + username
+print "Username: " + #getUsername

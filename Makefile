@@ -1,21 +1,24 @@
-++ = g++
-++FLAGS = -std=c++17
-LIBS = -lncurses -lcurl
+CXX = g++
+CXXFLAGS = -std=c++17 -Ithird-parties
+LIBS = -lncurses -lcurl -lwininet
 TARGET = target/epi2
 
+ifeq ($(OS),Windows_NT)
+    LIBS += -lwininet
+endif
+
 SOURCES = src/downloadbar-utils.cpp \
-		  src/epi.cpp \
-		  src/license.cpp \
-		  src/noerrorfile.cpp \
-		  src/utils/calc.cpp \
-		  src/utils/colors.cpp \
-		  src/utils/utils.cpp
+          src/epi.cpp \
+          src/license.cpp \
+          src/noerrorfile.cpp \
+		  src/color.cpp \
+          third-parties/lineeditor/lineeditor.cpp
 
 build: $(TARGET)
 
 $(TARGET): $(SOURCES)
 	@mkdir -p target
-	$(++) $(++FLAGS) src/epi.cpp -o $(TARGET) $(LIBS)
+	$(CXX) $(CXXFLAGS) $(SOURCES) -o $(TARGET) $(LIBS)
 
 run: build
 	@$(TARGET)
@@ -23,11 +26,10 @@ run: build
 debug: clean 
 debug: ++FLAGS += -g -O0
 debug: build
-debug:
 	gdb -tui ./$(TARGET)
 
 test: $(SOURCES)
-	$(++) $(++FLAGS) -fsyntax-only src/epi.cpp $(LIBS)
+	$(CXX) $(CXXFLAGS) -fsyntax-only $(SOURCES) $(LIBS)
 
 full-test: $(SOURCES)
 	@for f in $(SOURCES); do \
@@ -68,4 +70,3 @@ update:
 clean:
 	rm -rf target
 	mkdir -p target
-
