@@ -40,19 +40,33 @@ full-test: $(SOURCES)
 install: build
 	@printf "\033[36m→ Creating installation folder\033[0m\n"
 	mkdir -p "$(HOME)/epi2"
-
+	
 	@printf "\033[36m→ Copying files\033[0m\n"
 	cp target/epi2 "$(HOME)/epi2"
 	cp LICENSE "$(HOME)/epi2"
 	cp uninstall.sh "$(HOME)/epi2"
-
+	
 	@printf "\033[36m→ Adding epi2 to PATH\033[0m\n"
 	@if ! grep -q '$(HOME)/epi2' ~/.bashrc; then \
 		echo 'export PATH=$$PATH:$(HOME)/epi2' >> ~/.bashrc; \
 	fi
-
+	
 	@printf "\033[33m! For adding epi2 to PATH you should run \"source ~/.bashrc\" manually\033[0m\n"
 	@printf "\033[32m✓ Installation completed\033[0m\n"
+
+update:
+	@printf "\033[36m→ Updating sources\033[0m\n"
+	git pull
+	
+	@printf "\033[36m→ Cleaning and building project\033[0m\n"
+	make clean build
+	
+	@printf "\033[36m→ Copying files\033[0m\n"
+	cp target/epi2 "$(HOME)/epi2"
+	cp LICENSE "$(HOME)/epi2"
+	cp uninstall.sh "$(HOME)/epi2"
+	
+	@printf "\033[32m✓ Update completed\033[0m\n"
 
 clean:
 	rm -rf target
