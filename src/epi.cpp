@@ -1,4 +1,4 @@
-// epi² v_0.203
+// epi² 25
 // @author Blas Fernández
 // @date 31-07-24
 // @brief Nice programming language
@@ -825,7 +825,7 @@ int compile(String& command, String& returnS, String& exceptionN, int& line) {
 			run(command, returnS, exceptionN, line);
 		}
 	} else if(doingExternal) {
-		if(command.substr(0,4) == "	") {
+		if(command.substr(0,4) == "    ") {
 			string com = command.substr(4);
 			
 			externalCode += com + "\n";
@@ -838,13 +838,19 @@ int compile(String& command, String& returnS, String& exceptionN, int& line) {
 				f.close();
 				system("python temp.py");
 				remove("temp.py");
-			} else if(externalLang == "bat") {
+			} else if(externalLang == "batch") {
 				ofstream f("temp.bat");
-				f << "@echo off" << "\n";
 				f << externalCode;
 				f.close();
 				system(".\\temp.bat");
 				remove("temp.bat");
+			} else if(externalLang == "bash") {
+				ofstream f("temp.sh");
+				f << "#!/bin/bash/" << "\n";
+				f << externalCode;
+				f.close();
+				system("bash temp.sh");
+				remove("temp.sh");
 			}
 
 			externalCode = "";
@@ -1427,30 +1433,8 @@ string toCpp(string line, string& beforeMain) {
 
 // Main
 int main(int argc, char** argv) {
-	
-
-	MultilineEditor editor;
-    std::string input;
-    
-    editor.SetMultiLineMode(true);
-    
-    while (true) {
-        if (editor.Edit(input, "edit> ")) {
-            if (input == "exit") break;
-            std::cout << "Texto ingresado:\n" << input << "\n";
-            editor.AddHistory(input);
-        } else {
-            break;
-        }
-    }
-    
-    return 0;
-
-	return 0;
-
-
 	if(isStrOnCharArr("--version", argv, argc)) {
-		cout << "epi" << (char) 253 << " v_0.203\n";
+		cout << "epi" << (char) 253 << " 25\n";
 		cout << "This program is open-source software licensed with GNU GPL v3.\n";
 		cout << "Run \"epi2 --show-license\" for reading it.\n";
 		cout << "You can modify this code BUT the name of the new program should contain the \"" << (char) 253 << "\" symbol.\n";
@@ -1524,7 +1508,7 @@ int main(int argc, char** argv) {
 		#ifndef WIN32
 		system("title epi2");
 		#endif
-		cout << ASCII_BG_GREEN << ASCII_BLACK << ASCII_BOLD << " * " << ASCII_RESET << " epi" << (char) 253 << " v_0.203\nEnter any epi" << (char) 253 << " command or enter \"help\" for get a list of commands.\n";
+		cout << ASCII_BG_GREEN << ASCII_BLACK << ASCII_BOLD << " * " << ASCII_RESET << " epi" << (char) 253 << " 25\nEnter any epi" << (char) 253 << " command or enter \"help\" for get a list of commands.\n";
 		String command = "";
 		while (command != "exit()") {
 			cout << ASCII_BOLD << BRIGHT_WHITE << ">> " << ASCII_RESET;
@@ -1536,7 +1520,7 @@ int main(int argc, char** argv) {
 				cout << "- \"exit()\" Exit\n";
 				cout << "Go to " << ASCII_UNDERLINE << ASCII_BOLD << ASCII_CYAN << "https://e--epi.web.app/docs/" << ASCII_RESET << " for getting a full list of epi commands.\n";
 			} else if(command == "version") {
-				cout << "epi" << (char) 253 << " v_0.203\n";
+				cout << "epi" << (char) 253 << " 25\n";
 				cout << "This program is open-source software licensed with GNU GPL v3.\n";
 				cout << "Run \"epi2 --show-license\" for reading the license.\n";
 				cout << "You can modify this code BUT the name of the new program should contain the \"" << (char) 253 << "\" symbol.\n";

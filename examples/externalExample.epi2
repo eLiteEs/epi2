@@ -1,4 +1,7 @@
-external "python"
-    print("Hello, World!")
-    username = input("username: ")
-    print("Hello, " + username)
+@ external "python"
+(    print("Hello, World!")
+(    username = input("username: ")
+(    print("Hello, " + username)
+
+external "batch"
+    echo "Hola"

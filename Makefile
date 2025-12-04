@@ -5,6 +5,7 @@ TARGET = target/epi2
 
 ifeq ($(OS),Windows_NT)
     LIBS += -lwininet
+	TARGET = target\epi2.exe
 endif
 
 SOURCES = src/downloadbar-utils.cpp \
@@ -26,7 +27,7 @@ run: build
 debug: clean 
 debug: ++FLAGS += -g -O0
 debug: build
-	gdb -tui ./$(TARGET)
+	gdb -tui $(TARGET)
 
 test: $(SOURCES)
 	$(CXX) $(CXXFLAGS) -fsyntax-only $(SOURCES) $(LIBS)

@@ -54,6 +54,11 @@
                         "source": "numbers/number-operators.md"
                     }
                 ]
+            },
+            {
+                "type":"item",
+                "name":"Booleans",
+                "source":"booleans.md"
             }
         ]
     },
@@ -101,5 +106,15 @@
         "type":"item",
         "name":"Include",
         "source":"include.md"
+    },
+    {
+        "type":"item",
+        "name":"Delete keyword",
+        "source":"delete.md"
+    },
+    {
+        "type":"item",
+        "name":"External functions",
+        "source":"external.md"
     }
 ]
