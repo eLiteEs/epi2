@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Ithird-parties
-LIBS = -lncurses -lcurl -lwininet
+LIBS = -lncurses -lcurl
 TARGET = target/epi2
 
 ifeq ($(OS),Windows_NT)
@@ -9,10 +9,10 @@ ifeq ($(OS),Windows_NT)
 endif
 
 SOURCES = src/downloadbar-utils.cpp \
-          src/epi.cpp \
+	  src/epi.cpp \
           src/license.cpp \
           src/noerrorfile.cpp \
-		  src/color.cpp \
+	  src/color.cpp \
           third-parties/lineeditor/lineeditor.cpp
 
 build: $(TARGET)
